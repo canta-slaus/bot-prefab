@@ -8,7 +8,7 @@ module.exports = async (client, message) => {
     
     if (!message.content.startsWith(PREFIX)) return;
 
-    let msgargs = message.content.substring(message.content.indexOf(PREFIX)+PREFIX.length).split(new RegExp(/\s+/));
+    let msgargs = message.content.substring(PREFIX.length).split(new RegExp(/\s+/));
     let cmdName = msgargs.shift().toLowerCase();
     
     const command = await client.commands.get(cmdName) || 
@@ -22,7 +22,7 @@ module.exports = async (client, message) => {
     let cds = command.cooldown || 0;
     if (cds !== 0) {
         if (!cooldowns.has(command.name)) {
-            cooldowns.set(command.name, new discord.Collection());
+            cooldowns.set(command.name, new Collection());
         }
 
         const now = Date.now();
