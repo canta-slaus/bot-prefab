@@ -1,4 +1,4 @@
-const PREFIX = require('../../../config/config.json').PREFIX;
+const PREFIX = require('../../config/config.json').PREFIX;
 
 module.exports = {
     name: "ping",
