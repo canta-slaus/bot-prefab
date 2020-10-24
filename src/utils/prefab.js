@@ -4,10 +4,11 @@ module.exports = {
     name: "",
     aliases: [],
     description: "",
-    usage: `\`${PREFIX}\``,
-    examples: `\`${PREFIX}\``,
+    usage: "",
+    examples: "",
     cooldown: 0,
     perms: [],
+    arguments: [],
     
     execute: async function(client, message, args) {
 
