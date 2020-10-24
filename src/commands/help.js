@@ -17,6 +17,7 @@ module.exports = {
             .setDescription(`Use \`${PREFIX}help [command name]\` to get more info on a specific command, for example: \`${PREFIX}help ping\``)
             .addField("Misc", "`help`, `ping`")
 	        .setTimestamp()
+            .setThumbnail(client.user.displayAvatarURL())
             await message.channel.send(hEmbed);
         }
         else {
@@ -31,6 +32,7 @@ module.exports = {
             .setDescription(`${command.description}`)
             .addField("Usage", `${command.usage}`)
             .setTimestamp()
+            .setThumbnail(client.user.displayAvatarURL())
             if (command.aliases.length !== 0) hEmbed.addField("Aliases", `${command.aliases.join(', ')}`)
             if (command.examples) hEmbed.addField("Examples", `${command.examples}`)
             message.channel.send(hEmbed);
