@@ -16,7 +16,7 @@ async function registerCommands(client, dir) {
                     let cmdModule = require(path.join(__dirname, dir, file));
                     let { aliases } = cmdModule;
                     client.commands.set(cmdName, cmdModule);
-                    if(aliases.length !== 0)
+                    if(aliases && aliases.length !== 0)
                         aliases.forEach(alias => client.commands.set(alias, cmdModule));
                 }
                 catch(err) {
