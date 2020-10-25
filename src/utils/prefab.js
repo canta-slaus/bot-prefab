@@ -26,6 +26,9 @@ Attributes:
 
     > usage: [String, optional]
         - how to use the command (will be displayed in the help message)
+    
+    > description: [String, needed]
+        - information about the command (will be displayed in the help message)
 
     > examples [String, optional]
         - examples of how to use the command (will be displayed in the help message)
