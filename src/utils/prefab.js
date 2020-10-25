@@ -49,6 +49,6 @@ Attributes:
 
         - ArgumentType: NUMBER, CHANNEL, ROLE, MEMBER_OR_USER           [needed]
         - prompt: The message to sent if the command user didn't provide            [optional, will not send a message and simply return]
-        - optional: If true, then it will skip it if it wasn't provided by the command user and move to the next argument           [optional, default will be false]
+        - optional: If true, then it will skip it if it wasn't provided by the command user and move to the next argument           [optional, default will be false, if true, prompt will not be sent]
 
 */
