@@ -1,5 +1,5 @@
 module.exports = class Util {
-    static processArguments(arguments) {
-        
+    static processArguments(message, arguments) {
+
     }
 }
