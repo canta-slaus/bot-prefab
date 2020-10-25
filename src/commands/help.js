@@ -28,12 +28,11 @@ module.exports = {
 
             let hEmbed = new MessageEmbed()
             .setTitle(`${command.name}`)
-            .setColor(EMBED_COLOR)
             .setDescription(`${command.description}`)
-            .addField("Usage", `${command.usage}`)
+            .setColor(EMBED_COLOR)
             .setTimestamp()
-            .setThumbnail(client.user.displayAvatarURL())
-            if (command.aliases.length !== 0) hEmbed.addField("Aliases", `${command.aliases.join(', ')}`)
+            if (command.usage) hEmbed.addField("Usage", `${command.usage}`)
+            if (command.aliases && command.aliases.length !== 0) hEmbed.addField("Aliases", `${command.aliases.join(', ')}`)
             if (command.examples) hEmbed.addField("Examples", `${command.examples}`)
             message.channel.send(hEmbed);
         }
