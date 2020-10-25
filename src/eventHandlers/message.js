@@ -1,4 +1,5 @@
 const PREFIX = require("../../config/config.json").PREFIX;
+const { processArguments } = require("../utils/utils")
 const { Collection } = require("discord.js")
 const cooldowns = new Collection();
 
@@ -35,6 +36,8 @@ module.exports = async (client, message) => {
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
     }
+
+    if (command.arguments) processArguments(message, command.arguments)
 
     command.execute(client, message, msgargs);
 };
