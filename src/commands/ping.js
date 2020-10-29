@@ -8,8 +8,7 @@ module.exports = {
     
     execute: async function(client, message, args) {
         try {
-            const msg = await message.channel.send("Ping?");
-            await msg.edit(`Pong! Latency is ${msg.createdTimestamp - message.createdTimestamp}ms.`);
+            message.channel.send(`Ping! ${Date.now() - message.createdTimestamp}ms\nWS: ${client.ws.ping}ms`);
         } catch (err) {
             message.channel.send(`${message.author.username}, oops, something went wrong! Contact support.\nError: \`${err.message}\``)
         }
