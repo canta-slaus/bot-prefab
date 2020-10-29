@@ -37,7 +37,8 @@ module.exports = async (client, message) => {
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
     }
 
-    if (command.arguments && command.arguments.length !== 0) processArguments(message, command.arguments, msgargs)
-
+    if (command.arguments && command.arguments.length !== 0) msgargs = processArguments(message, command.arguments, msgargs)
+    console.log(msgargs)
+    if (!msgargs) return;
     command.execute(client, message, msgargs);
 };
