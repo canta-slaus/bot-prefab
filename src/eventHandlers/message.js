@@ -38,7 +38,6 @@ module.exports = async (client, message) => {
     }
 
     if (command.arguments && command.arguments.length !== 0) msgargs = processArguments(message, command.arguments, msgargs)
-    console.log(msgargs)
     if (!msgargs) return;
     command.execute(client, message, msgargs);
 };
