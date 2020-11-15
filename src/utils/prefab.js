@@ -53,7 +53,7 @@ Attributes:
                 prompt: String
             }
 
-        - ArgumentType: NUMBER, CHANNEL, ROLE, AUTHOR_OR_MEMBER, ROLE_OR_MEMBER             [needed]
-        - prompt: The message to sent if the command user didn't provide                    [optional, will not send a message and simply return if not set]
+        - ArgumentType: NUMBER, CHANNEL, ROLE, AUTHOR_OR_MEMBER, ROLE_OR_MEMBER, STRING             [needed]
+        - prompt: The message to sent if the command user didn't provide                            [optional, will not send a message and simply return if not set]
 
 */

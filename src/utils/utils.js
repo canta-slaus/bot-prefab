@@ -59,6 +59,12 @@ module.exports = class Util {
                         else msgArgs[counter] = member
                     } else msgArgs[counter] = role
                     break;
+                case "STRING":
+                    if (!msgArgs[counter]) {
+                        if (argument.prompt) message.channel.send(argument.prompt)
+                        return
+                    }
+                    break;
                 default:
                     return console.log(`The argument type ${argument.type} doesn't exist.`);
             }
