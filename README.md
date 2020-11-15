@@ -1,5 +1,5 @@
 # Discord.js Bot Prefab
-**DISCLAIMER: If you are new to Discord.js and Javascript in general, then don't even bother trying to understand how this prefab works. You should have at least decent knowledge about how Discord bots work and know some basic JS. If you have any question or spot any mistakes, shoot me a DM on Discord: canta#5556.**\
+**DISCLAIMER: If you are new to Discord.js and JavaScript in general, then don't even bother trying to understand how this prefab works. You should have at least decent knowledge about how Discord bots work and know some basic JS. If you have any question or spot any mistakes, shoot me a DM on Discord: canta#5556.**\
 **_Don't DM me asking how to do this and that command, I will only help you with using the bot prefab, not with specific commands._**
 
 ## What is this?
