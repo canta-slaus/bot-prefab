@@ -11,11 +11,10 @@ async function registerCommands(client, dir) {
         else {
             // Check if file is a .js file.
             if(file.endsWith(".js")) {
-                let cmdName = file.substring(0, file.indexOf(".js"));
                 try {
                     let cmdModule = require(path.join(__dirname, dir, file));
                     let { aliases } = cmdModule;
-                    client.commands.set(cmdName, cmdModule);
+                    client.commands.set(cmdModule.name, cmdModule);
                     if(aliases && aliases.length !== 0)
                         aliases.forEach(alias => client.commands.set(alias, cmdModule));
                 }
