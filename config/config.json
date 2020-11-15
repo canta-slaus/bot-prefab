@@ -1,5 +1,6 @@
 {
-    "TOKEN": "",
-    "PREFIX": "",
-    "EMBED_COLOR": "#17ac86"
+    "TOKEN": "YOUR_TOKEN_HERE",
+    "PREFIX": "DEFAULT_PREFIX_HERE",
+    "EMBED_COLOR": "#17ac86",
+    "MONGODB_URI": "MONGODB_CLUTTER_URI_HERE"
 }
