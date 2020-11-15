@@ -6,11 +6,17 @@
 This is a bot prefab to make creating bots a bit easier, it has a fairly simple command and event handler and two simple commands (_ping_ and _help_). I made this because I don't think writing the whole handler yourself is neccesary to make a Discord bot, although you should at least try to understand how it all works to make it easier to debug.\
 The _help_ command is already set up to send a help message for other commands (more about that later).
 
+## Available Features
+- Per server prefixes
+- Per server command disabling/enabling
+- Global blacklisting/whitelisting of users
+
 ## How to use this?
 ### First steps
 First of all, either clone the repo by downloading the zip or using GIT. Then run `npm init` and `npm i`, though this prefab only requires discord.js only so far.
-Then, go to `config/config.json` and add your bot token as well as the global prefix. Now you can simply start the bot using either node (`node .`) or nodemon (`nodemon .`).\
+Then, go to `config/config.json` and add your bot token, the default prefix to use and your MongoDB URI. Now you can simply start the bot using either node (`node .`) or nodemon (`nodemon .`).\
 Personally, I suggest using nodemon.
+
 ### How to add new commands
 To add a new command, simply create a new file inside the `./src/commands` folder (you can also put them into subfolders and so on). Then head over to `./src/utils/prefab.js`. `prefab.js` is a command template that you can copy and paste to make creating commands easier and faster (who wants to type the same couple lines over and over, anyway). The prefab file comes with some comments at the very bottom of it, make sure to read the comments to get an understanding of all the properties of a command.
 ### How to add new events
@@ -27,5 +33,9 @@ module.exports = async (client, messageReaction, user) => {
     console.log('Someone reacted to a message!')
 }
 ```
+### How to blacklist/whitelist users
+A blacklisted user will not be able to use any command from your bot and will be totally ignored.\
+To blacklist someone, simply require the functions `blacklist, whitelist` defined in `./src/utils/utils`.
+
 ## What now?
 If you have any suggestions for new features or encounter any bugs from the prefab itself; my DMs are always open.
