@@ -12,7 +12,6 @@ module.exports = async (client, message) => {
         guildInfo['prefix'] = fetch.prefix;
         guildInfo['disabledCommands'] = fetch.disabledCommands;
         client.guildInfoCache.set(message.guild.id, guildInfo)
-        console.log(guildInfo)
     }
     const PREFIX = guildInfo.prefix
     if (!message.content.startsWith(PREFIX)) return;
