@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const config = require("../config/config.json");
 const { registerCommands, registerEvents } = require('./utils/registry');
 
-const client = new discord.Client({ws: { intents: discord.Intents.ALL }, presence: {status: 'invisible'}});
+const client = new discord.Client({ws: { intents: discord.Intents.ALL }});
 
 (async () => {
     await client.login(config.TOKEN);
