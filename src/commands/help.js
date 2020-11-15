@@ -4,7 +4,7 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: 'help',
-    aliases: ["h", "commands"],
+    aliases: ["h"],
     description: "Get help on commands.",
     usage: `To get help on a specific command, use \`${PREFIX}help [command name]\` (without the [ ]).\nFor a full list of all commands, simply use \`${PREFIX}help\`.`,
     examples: `\`${PREFIX}help ping\``,
@@ -34,6 +34,7 @@ module.exports = {
             if (command.usage) hEmbed.addField("Usage", `${command.usage}`)
             if (command.aliases && command.aliases.length !== 0) hEmbed.addField("Aliases", `${command.aliases.join(', ')}`)
             if (command.examples) hEmbed.addField("Examples", `${command.examples}`)
+            if (client.guildInfoCache.get(message.guild.id).disabledCommands.includes(command.name)) hEmbed.setAuthor('This command is currently disabled in this server.')
             message.channel.send(hEmbed);
         }
     }
