@@ -72,4 +72,14 @@ module.exports = class Util {
         }
         return msgArgs;
     }
+    static async blacklist(client, userID) {
+        if (client.blacklistCache.has(userID)) return
+        await client.DBConfig.findByIdAndUpdate('blacklist', {$push: {'blacklisted': userID}}, {new: true, upsert: true, setDefaultsOnInsert: true})
+        client.blacklistCache.add(userID)
+    }
+    static async whitelist(client, userID) {
+        if (!client.blacklistCache.has(userID)) return
+        await client.DBConfig.findByIdAndUpdate('blacklist', {$pull: {'blacklisted': userID}}, {new: true, upsert: true, setDefaultsOnInsert: true})
+        client.blacklistCache.delete(userID)
+    }
 }

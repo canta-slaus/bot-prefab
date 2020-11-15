@@ -11,6 +11,7 @@ const client = new discord.Client({ws: { intents: discord.Intents.ALL }, presenc
     client.commands = new discord.Collection();
     client.guildInfoCache = new discord.Collection();
     client.DBGuild = require('../schemas/guildSchema');
+    client.DBConfig = require('../schemas/config')
     await registerEvents(client, '../eventHandlers');
     await registerCommands(client, '../commands');
     await mongoose.connect(config.MONGODB_URI, {
@@ -18,4 +19,6 @@ const client = new discord.Client({ws: { intents: discord.Intents.ALL }, presenc
         useUnifiedTopology: true,
         useFindAndModify: false
     });
+    const blacklistFetch = await client.DBConfig.findByIdAndUpdate('blacklist', {}, {new: true, upsert: true, setDefaultsOnInsert: true})
+    client.blacklistCache = new Set(blacklistFetch.blacklisted)
 })();

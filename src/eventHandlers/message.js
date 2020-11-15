@@ -3,9 +3,7 @@ const { Collection } = require("discord.js")
 const cooldowns = new Collection();
 
 module.exports = async (client, message) => {
-    
-    if (message.author.bot) return;
-    if (message.channel.type === 'dm') return;
+    if (message.author.bot || message.channel.type === 'dm' || client.blacklistCache.has(message.author.id)) return;
 
     let guildInfo = client.guildInfoCache.get(message.guild.id)
     if (!guildInfo) {
@@ -17,7 +15,6 @@ module.exports = async (client, message) => {
         console.log(guildInfo)
     }
     const PREFIX = guildInfo.prefix
-
     if (!message.content.startsWith(PREFIX)) return;
 
     let msgargs = message.content.substring(PREFIX.length).split(new RegExp(/\s+/));
