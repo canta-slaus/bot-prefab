@@ -7,6 +7,7 @@ module.exports = {
     usage: "",
     examples: "",
     cooldown: 0,
+    canNotDisable: false,
     perms: [],
     arguments: [],
     
@@ -26,7 +27,7 @@ Attributes:
 
     > usage: [String, optional]
         - how to use the command (will be displayed in the help message)
-    
+
     > description: [String, needed]
         - information about the command (will be displayed in the help message)
 
@@ -35,6 +36,12 @@ Attributes:
 
     > cooldown [Number (Seconds), optional]
         - cooldown of the command
+        - default: 0
+
+    > canNotDisable [Boolean, optional]
+        - whether the command can be disabled in the server
+        - default: false
+      [ - set it to 'true', if you don't want this command to be disabled ]
 
     > perms [Array of Strings, optional]
         - the perms the user needs to use this command
