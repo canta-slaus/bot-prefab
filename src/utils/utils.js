@@ -65,6 +65,16 @@ module.exports = class Util {
                         return
                     }
                     break;
+                case "MEMBER":
+                    if (!msgArgs[counter]) {
+                        if (argument.prompt) message.channel.send(argument.prompt)
+                        return
+                    }
+                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                    member = message.guild.members.cache.get(msgArgs[counter])
+                    if (!member) return
+                    else msgArgs[counter] = member
+                    break;
                 default:
                     return console.log(`The argument type ${argument.type} doesn't exist.`);
             }
