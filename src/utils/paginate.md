@@ -66,7 +66,7 @@ module.exports = {
         .setColor('#ff0000')
         .setTimestamp()
         .setDescription('some text')
-        array.push(embed)
+        array.push(embed1)
         
         const embed2 = new MessageEmbed()
         .setTitle('Test Embed')
