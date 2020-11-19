@@ -10,7 +10,7 @@ The _help_ command is already set up to send a help message for other commands (
 - Per server prefixes
 - Per server command disabling/enabling
 - Global blacklisting/whitelisting of users
-- Pagination function
+- Pagination function and more quality of life features
 
 ## How to use this?
 ### First steps
@@ -34,13 +34,7 @@ module.exports = async (client, messageReaction, user) => {
     console.log('Someone reacted to a message!')
 }
 ```
-### How to blacklist/whitelist users
-A blacklisted user will not be able to use any command from your bot and will be totally ignored.\
-To blacklist someone, simply require the functions `blacklist, whitelist` defined in `./src/utils/utils`.
-### How to use pagination
-First, require the function `paginate` defined in `./src/utils/utils`. The function requires two parameters: `message` and `embeds`.\
-`message`: just the message object _(to send the paginated message, get the author to listen to the reactions to, etc.)_.\
-`embeds`: an array of embed objects. Yes, a MessageEmbed is a plain old JavaScript object. There is a better explanation with examples in `src/utils/paginate.md`.\
-The function also has an optional parameter `optional`: `optional = { time: maxTimeInMs }` _default time: 30000ms_
+### How to use blacklisting/whitelisting/pagination etc.
+There are explanations and examples in `src/utils/utils.md`.
 ## What now?
 If you have any suggestions for new features or encounter any bugs from the prefab itself; my DMs are always open.
