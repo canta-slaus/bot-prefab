@@ -7,7 +7,8 @@ const guildSchema = Schema({
         default: PREFIX,
         type: String
     },
-    disabledCommands: Array
+    disabledCommands: Array,
+    commandPerms: {}
 });
 
 module.exports = model('guildSchema', guildSchema);
