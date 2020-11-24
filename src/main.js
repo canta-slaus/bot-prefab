@@ -21,4 +21,5 @@ const client = new discord.Client({ws: { intents: discord.Intents.ALL }});
     });
     const blacklistFetch = await client.DBConfig.findByIdAndUpdate('blacklist', {}, {new: true, upsert: true, setDefaultsOnInsert: true})
     client.blacklistCache = new Set(blacklistFetch.blacklisted)
+    console.log('Added all commands, events, schemas and connected to MongoDB.')
 })();
