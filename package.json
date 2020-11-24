@@ -1,13 +1,10 @@
 {
   "name": "bot-prefab",
   "version": "1.0.0",
-  "description": "",
+  "description": "Small and simple template to make bots using Discord.js.",
   "main": "./src/main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
-  "author": "",
+  "author": "https://github.com/canta-slaus/bot-prefab",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.4.0",
