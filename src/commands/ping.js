@@ -7,6 +7,7 @@ module.exports = {
     usage: `\`${PREFIX}ping\``,
     
     execute: async function(client, message, args) {
-        message.channel.send(`Ping! ${Date.now() - message.createdTimestamp}ms\nWS: ${client.ws.ping}ms`);
+        const msg = await message.channel.send("Ping?");
+        await msg.edit(`Pong! Latency is ${msg.createdTimestamp - message.createdTimestamp}ms.`);
     }
 }
