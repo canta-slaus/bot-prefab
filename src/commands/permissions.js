@@ -65,7 +65,7 @@ module.exports = {
         .setFooter('React with 🔁 to override the permissions.')
 
         if (!commandPerms || !commandPerms[command.name]) {
-            if (command.perms) embed.setDescription('\`' + command.perms.join('\`, \`') + '\`')
+            if (command.perms && command.perms.length !== 0) embed.setDescription('\`' + command.perms.join('\`, \`') + '\`')
             else embed.setDescription('You don\'t need any permissions to run this command.')
         } else {
             embed.setDescription('\`' + commandPerms[command.name].join('\`, \`') + '\`')
@@ -112,7 +112,6 @@ module.exports = {
                 await client.DBGuild.findByIdAndUpdate(message.guild.id, { $set: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
             }
             message.channel.send(`${message.author.username}, the permissions for ${command.name} have been overwritten.`)
-            console.log(guildInfo)
         })
     }
 }
