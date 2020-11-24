@@ -8,7 +8,7 @@ The _help_ command is already set up to send a help message for other commands (
 
 ## Available Features
 - Per server prefixes
-- Per server command disabling/enabling
+- Per server command disabling/enabling and customizable per server command permissions
 - Global blacklisting/whitelisting of users
 - Pagination function and more quality of life features
 
