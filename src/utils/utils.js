@@ -99,7 +99,7 @@ function processArguments(message, expectedArgs, msgArgs) {
  */
 async function blacklist(client, userID) {
     if (client.blacklistCache.has(userID)) return
-    await client.DBConfig.findByIdAndUpdate('blacklist', {$push: {'blacklisted': userID}}, {new: true, upsert: true, setDefaultsOnInsert: true})
+    await client.DBConfig.findByIdAndUpdate('blacklist', {$push: {'blacklisted': userID}}, { new: true, upsert: true, setDefaultsOnInsert: true })
     client.blacklistCache.add(userID)
 }
 
@@ -110,7 +110,7 @@ async function blacklist(client, userID) {
  */
 async function whitelist(client, userID) {
     if (!client.blacklistCache.has(userID)) return
-    await client.DBConfig.findByIdAndUpdate('blacklist', {$pull: {'blacklisted': userID}}, {new: true, upsert: true, setDefaultsOnInsert: true})
+    await client.DBConfig.findByIdAndUpdate('blacklist', {$pull: {'blacklisted': userID}}, { new: true, upsert: true, setDefaultsOnInsert: true })
     client.blacklistCache.delete(userID)
 }
 
@@ -188,7 +188,7 @@ function randomRange(min, max) {
 
 /**
  * Function to set a timeout
- * @param {number} ms - Time to wait in ms
+ * @param {number} ms - Time to wait in milliseconds
  * @return {Promise}
  * @example await delay(5000)
  */
@@ -196,7 +196,24 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+/**
+ * Function to convert milliseconds into readable time
+ * @param {Number} ms - The time in 
+ * @return {String} Readable time as a string
+ */
+function msToTime(ms) {
+    let day, hour, minute, seconds;
+    seconds = Math.floor(ms / 1000);
+    minute = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    hour = Math.floor(minute / 60);
+    minute = minute % 60;
+    day = Math.floor(hour / 24);
+    hour = hour % 24;
+    return hour ? (`${hour}h ${minute}m ${seconds}s`) : (minute ? (`${minute}m ${seconds}s`) : (`${seconds}s`))
+}
+
 module.exports = {
     processArguments, blacklist, whitelist, paginate,
-    getReply, randomRange, delay
+    getReply, randomRange, delay, msToTime
 }
