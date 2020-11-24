@@ -1,5 +1,5 @@
 # Available features
-- Command arguments
+- Command arguments and other command properties
 - Pagination
 - Global user blacklisting/whitelisting
 - randomRange, delay, getReply, ...
@@ -40,6 +40,7 @@ module.exports = {
 }
 ```
 If they do `test 1 2 add`, it will log `[ 1, 2, 'add' ].`\
+To add your and/or other users ID's as a dev (for the `devOnly` property), add their ID's as a string inside the array `dev` in `config/config.json`. Same goes for `someServersOnly`.
 All available types and many more command properties can be seen in `src/utils/prefab.js`
 ## Pagination
 First, require the function `paginate` defined in `./src/utils/utils`. The function requires two parameters: `message` and `embeds`.\
