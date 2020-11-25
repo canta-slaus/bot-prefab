@@ -1,4 +1,4 @@
-const { processArguments, msToTime } = require("../utils/utils")
+const { processArguments, msToTime, missingPermissions } = require("../utils/utils")
 const { Collection } = require("discord.js")
 const cooldowns = new Collection();
 const { devs, someServers } = require('../../config/config.json')
@@ -35,9 +35,16 @@ module.exports = async (client, message) => {
     if (command.serverOwnerOnly && message.guild.ownerID !== message.author.id) return;
 
     if (guildInfo.disabledCommands.includes(command.name)) return;
-    if ((guildInfo.commandPerms && guildInfo.commandPerms[command.name] && !message.member.hasPermission(guildInfo.commandPerms[command.name]))
-        || (command.perms && !message.member.hasPermission(command.perms))) return;
+    if (guildInfo.commandPerms && guildInfo.commandPerms[command.name] && !message.member.hasPermission(guildInfo.commandPerms[command.name])) {
+        return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, guildInfo.commandPerms[command.name])}`)
+    } else if (command.perms && !message.member.hasPermission(command.perms)) {
+        return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, command.perms)}`)
+    }
     
+    if (command.clientPerms && !message.guild.me.permissions.has(command.clientPerms)) {
+        return message.channel.send(`${message.author.username}, I am missing the following permissions: ${missingPermissions(message.guild.me, command.clientPerms)}`)
+    }
+
     const cd = command.cooldown;
     if (cd) {
         if (!cooldowns.has(command.name)) {
