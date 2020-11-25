@@ -2,6 +2,7 @@ const { processArguments, msToTime } = require("../utils/utils")
 const { Collection } = require("discord.js")
 const cooldowns = new Collection();
 const { devs, someServers } = require('../../config/config.json')
+const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 module.exports = async (client, message) => {
     if (message.author.bot || message.channel.type === 'dm' || client.blacklistCache.has(message.author.id)) return;
@@ -15,11 +16,15 @@ module.exports = async (client, message) => {
         if (fetch.commandPerms) guildInfo['commandPerms'] = fetch.commandPerms
         client.guildInfoCache.set(message.guild.id, guildInfo)
     }
-    const PREFIX = guildInfo.prefix
-    if (!message.content.startsWith(PREFIX)) return;
+    
+    const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(guildInfo.prefix)})\\s*`);
+    if (!prefixRegex.test(message.content)) return;
 
-    let msgargs = message.content.substring(PREFIX.length).split(new RegExp(/\s+/));
+    const [, matchedPrefix] = message.content.match(prefixRegex);
+    let msgargs = message.content.slice(matchedPrefix.length).trim().split(/ +/);
     let cmdName = msgargs.shift().toLowerCase();
+    
+    if (message.mentions.has(client.user) && !cmdName) return message.channel.send(`My prefix is \`${guildInfo.prefix}\` or ${client.user}\nTo view a list of my commands, type either \`${guildInfo.prefix}help\` or \`@${client.user.tag} help\``)
     
     const command = await client.commands.get(cmdName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
 

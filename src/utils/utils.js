@@ -1,5 +1,5 @@
 const { Message, User, MessageEmbed, Client } = require("discord.js");
-const reactions = ['◀️', '▶️']
+const reactions = ['◀️', '⏸️', '▶️']
 
 /**
  * Function to check if the user has passed in the proper arguments when using a command
@@ -119,13 +119,14 @@ async function whitelist(client, userID) {
  * @param {Message} message - Used to send the paginated message to the channel, get the user, etc.
  * @param {MessageEmbed[]} embeds - The array of embeds to switch between
  * @param {*} [options] - Optional parameters
- * @param {number} [options.time] - The max time for createReactionCollector
+ * @param {number} [options.time] - The max time for createReactionCollector after which all of the reactions disappear
  * @example Examples can be seen in `src/utils/utils.md`
  */
 async function paginate(message, embeds, options) {
     const pageMsg = await message.channel.send({ embed: embeds[0] })
     await pageMsg.react(reactions[0])
     await pageMsg.react(reactions[1])
+    await pageMsg.react(reactions[2])
 
     let pageIndex = 0;
     let time = 30000;
@@ -138,14 +139,28 @@ async function paginate(message, embeds, options) {
     const collector = pageMsg.createReactionCollector(filter, { time: time });
     collector.on('collect', (reaction, user) => {
         reaction.users.remove(user)
-        if (reaction.emoji.name === '▶️' && pageIndex < embeds.length - 1) {
-            pageIndex++
-            pageMsg.edit({ embed: embeds[pageIndex] })
-        } else if (reaction.emoji.name === '◀️' && pageIndex > 0) {
-            pageIndex--
-            pageMsg.edit({ embed: embeds[pageIndex] })
+        if (reaction.emoji.name === '▶️') {
+            if (pageIndex < embeds.length-1) {
+                pageIndex++
+                pageMsg.edit({ embed: embeds[pageIndex] })
+            } else {
+                pageIndex = 0
+                pageMsg.edit({ embed: embeds[pageIndex] })
+            }
+        } else if (reaction.emoji.name === '⏸️') {
+            collector.stop()
+        } else if (reaction.emoji.name === '◀️') {
+            if (pageIndex > 0) {
+                pageIndex--
+                pageMsg.edit({ embed: embeds[pageIndex] })
+            } else {
+                pageIndex = embeds.length-1
+                pageMsg.edit({ embed: embeds[pageIndex]})
+            }
         }
     });
+
+    collector.on('end', () => pageMsg.reactions.removeAll().catch(err => console.log(err)));
 }
 
 /**
