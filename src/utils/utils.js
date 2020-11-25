@@ -1,4 +1,4 @@
-const { Message, User, MessageEmbed, Client } = require("discord.js");
+const { Message, User, MessageEmbed, Client, GuildMember } = require("discord.js");
 const reactions = ['◀️', '⏸️', '▶️']
 
 /**
@@ -228,7 +228,22 @@ function msToTime(ms) {
     return hour ? (`${hour}h ${minute}m ${seconds}s`) : (minute ? (`${minute}m ${seconds}s`) : (`${seconds}s`))
 }
 
+/**
+ * Function to get all missing permissions of a GuildMember
+ * @param {GuildMember} member - The guild member whose missing permissions you want to get
+ * @param {String[]} perms - The permissions you want to check for
+ * @return {String} Readable string containing all missing permissions
+ */
+function missingPermissions(member, perms){
+    const missingPerms = member.permissions.missing(perms)
+    .map(str=> `\`${str.replace(/_/g, ' ').toLowerCase().replace(/\b(\w)/g, char => char.toUpperCase())}\``)
+
+    return missingPerms.length > 1 ?
+    `${missingPerms.slice(0, -1).join(", ")} and ${missingPerms.slice(-1)[0]}` :
+    missingPerms[0]
+}
+
 module.exports = {
     processArguments, blacklist, whitelist, paginate,
-    getReply, randomRange, delay, msToTime
+    getReply, randomRange, delay, msToTime, missingPermissions
 }
