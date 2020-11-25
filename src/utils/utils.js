@@ -1,5 +1,5 @@
 const { Message, User, MessageEmbed, Client } = require("discord.js");
-const reactions = ['◀️', '▶️']
+const reactions = ['◀️', '⏸️', '▶️']
 
 /**
  * Function to check if the user has passed in the proper arguments when using a command
