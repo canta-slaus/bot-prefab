@@ -107,7 +107,8 @@ module.exports = {
                     permsArray.push(permissions[perms.content[i]])
                 }
                 update[`commandPerms.${command.name}`] = permsArray
-                guildInfo['commandPerms'][command.name] = permsArray
+                guildInfo.commandPerms = guildInfo.commandPerms ? guildInfo.commandPerms : {}
+                guildInfo.commandPerms[command.name] = permsArray
                 client.guildInfoCache.set(message.guild.id, guildInfo)
                 await client.DBGuild.findByIdAndUpdate(message.guild.id, { $set: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
             }
