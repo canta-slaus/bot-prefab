@@ -9,6 +9,7 @@ module.exports = {
     cooldown: 0,
     canNotDisable: false,
     perms: [],
+    clientPerms: [],
     devOnly: false,
     someServersOnly: false,
     serverOwnerOnly: false,
@@ -52,6 +53,10 @@ Attributes:
     > perms [Array of Strings, optional]
         - the perms the user needs to use this command
         - default: no permissions needed to use this 
+
+    > clientPerms [Array of Strings, optional]
+        - the perms your bot needs to use this command
+        - default: no permissions needed
 
     > devOnly [Boolean, optional]
         - whether only some specific people should be able to use this command
