@@ -4,7 +4,7 @@
 - Global user blacklisting/whitelisting
 - randomRange, delay, getReply, ...
 ## Command arguments
-In the message event, I use an ominous funciton:`processArguments()`. It _processes_ the given arguments and helps reduce duplicate code.\
+In the message event, I use an ominous function:`processArguments()`. It _processes_ the given arguments and helps reduce duplicate code.\
 ### Examples
 E.g.: If you are making a command that requires the user to pass in a number, simply add
 ```js
@@ -41,9 +41,9 @@ module.exports = {
 ```
 If they do `test 1 2 add`, it will log `[ 1, 2, 'add' ].`\
 To add your and/or other users ID's as a dev (for the `devOnly` property), add their ID's as a string inside the array `dev` in `config/config.json`. Same goes for `someServersOnly`.
-All available types and many more command properties can be seen in `src/utils/prefab.js`
+All available types and many more command properties can be seen in [`src/utils/prefab.js`](src/utils/prefab.js).
 ## Pagination
-First, require the function `paginate` defined in `./src/utils/utils`. The function requires two parameters: `message` and `embeds`.\
+First, require the function `paginate` defined in [`src/utils/utils.js`](src/utils/utils.js). The function requires two parameters: `message` and `embeds`.\
 `message`: just the message object _(to send the paginated message, get the author to listen to the reactions to, etc.)_.\
 `embeds`: an array of embed objects. Yes, a MessageEmbed is a plain old JavaScript object.\
 The function also has an optional parameter `optional`: `optional = { time: maxTimeInMs }` _default time: 30000ms_
@@ -136,7 +136,7 @@ module.exports = {
 That isn't very pretty code, but it works.
 ## How to blacklist/whitelist users
 A blacklisted user will not be able to use any command from your bot and will be totally ignored.\
-To blacklist someone, simply require the functions `blacklist, whitelist` defined in `./src/utils/utils`.
+To blacklist someone, simply require the functions `blacklist, whitelist` defined in [`src/utils/utils.js`](src/utils/utils.js).
 ### Examples
 ```js
 const { blacklist } = require('../../utils/utils')
@@ -153,7 +153,7 @@ module.exports = {
 It's that easy.
 ## Misc. functions
 ### getReply()
-First, require the function `getReply` defined in `./src/utils/utils`. The function requires one parameters: `message`.\
+First, require the function `getReply` defined in [`src/utils/utils.js`](src/utils/utils.js). The function requires one parameters: `message`.\
 `message`: just the message object _(to listen to messages, get the author to listen to the messages to, etc.)_.\
 The function also has an optional parameter `optional`:
 ```js
