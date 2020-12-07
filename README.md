@@ -3,7 +3,7 @@
 **_Don't DM me asking how to do this and that command, I will only help you with using the bot prefab, not with specific commands._**
 
 ## What is this?
-This is a bot prefab to make creating bots a bit easier, it has a fairly simple command and event handler and two simple commands ([`ping.js`](src/commands/ping.js) and [`help.js`](src/commands/help.js). I made this because I don't think writing the whole handler yourself is neccesary to make a Discord bot, although you should at least try to understand how it all works to make it easier to debug.\
+This is a bot prefab to make creating bots a bit easier, it has a fairly simple command and event handler and two simple commands ([`ping.js`](src/commands/ping.js) and [`help.js`](src/commands/help.js)). I made this because I don't think writing the whole handler yourself is neccesary to make a Discord bot, although you should at least try to understand how it all works to make it easier to debug.\
 The _help_ command is already set up to send a help message for other commands.
 
 ## Available Features
