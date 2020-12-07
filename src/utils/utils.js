@@ -170,6 +170,7 @@ async function paginate(message, embeds, options) {
  * @param {number} [options.time] - The max time for awaitMessages 
  * @param {User} [options.user] - The user to listen to messages to
  * @param {String[]} [options.words] - Optional accepted words, will aceept any word if not provided
+ * @param {RegExp} [options.regexp] - Optional RegExp to accept user input that matches the RegExp
  * @return {(Message|Boolean)} Returns the `message` sent by the user if there was one, returns `false` otherwise.
  * @example const reply = await getReply(message, { time: 10000, words: ['yes', 'y', 'n', 'no'] })
  */
@@ -183,7 +184,9 @@ async function getReply(message, options) {
         if (options.words) words = options.words
     }
     const filter = msg => {
-        return msg.author.id === user.id && (words.length === 0 || words.includes(msg.content.toLowerCase()))
+        return msg.author.id === user.id
+               && (words.length === 0 || words.includes(msg.content.toLowerCase()))
+               && (!options.regexp || options.regexp.test(msg.content))
     }
     const msgs = await message.channel.awaitMessages(filter, { max: 1, time: time })
     if (msgs.size > 0) return msgs.first()
