@@ -186,7 +186,7 @@ async function getReply(message, options) {
     const filter = msg => {
         return msg.author.id === user.id
                && (words.length === 0 || words.includes(msg.content.toLowerCase()))
-               && (!options.regexp || options.regexp.test(msg.content))
+               && (!options || !options.regexp || options.regexp.test(msg.content))
     }
     const msgs = await message.channel.awaitMessages(filter, { max: 1, time: time })
     if (msgs.size > 0) return msgs.first()
