@@ -4,7 +4,7 @@
 - Global user blacklisting/whitelisting
 - randomRange, delay, getReply, ...
 ## Command arguments
-In the message event, I use an ominous function:`processArguments()`. It _processes_ the given arguments and helps reduce duplicate code.\
+In the message event, I use an ominous function:`processArguments()`. It _processes_ the given arguments and helps reduce duplicate code.
 ### Examples
 E.g.: If you are making a command that requires the user to pass in a number, simply add
 ```js
