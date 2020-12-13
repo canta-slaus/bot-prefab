@@ -228,7 +228,8 @@ function msToTime(ms) {
     minute = minute % 60;
     day = Math.floor(hour / 24);
     hour = hour % 24;
-    return hour ? (`${hour}h ${minute}m ${seconds}s`) : (minute ? (`${minute}m ${seconds}s`) : (`${seconds}s`))
+    return day ? (hour ? (`${day}d ${hour}h ${minute}m ${seconds}s`) : (minute ? (`${day} ${minute}m ${seconds}s`) : (`${day} ${seconds}s`))) :
+                 (hour ? (`${day}d ${hour}h ${minute}m ${seconds}s`) : (minute ? (`${day} ${minute}m ${seconds}s`) : (`${day} ${seconds}s`)))
 }
 
 /**
