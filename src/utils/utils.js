@@ -1,93 +1,126 @@
 const { Message, User, MessageEmbed, Client, GuildMember } = require("discord.js");
 const reactions = ['◀️', '⏸️', '▶️']
+const consoleColors = {
+    "SUCCESS": "\u001b[32m",
+    "WARNING": "\u001b[33m",
+    "ERROR": "\u001b[31m"
+}
 
 /**
  * Function to check if the user has passed in the proper arguments when using a command
  * @param {Message} message - The message to check the arguments for
- * @param {object[]} expectedArgs - The expected arguments for the command
  * @param {array} msgArgs - The arguments given by the user
+ * @param {object[]} expectedArgs - The expected arguments for the command
  * @return {array} Returns the arguments array if all the arguments were as expected, else, returns `undefined/false`
  */
-function processArguments(message, expectedArgs, msgArgs) {
+function processArguments(message, msgArgs, expectedArgs) {
+    if (!Array.isArray(expectedArgs)) return log("WARNING", "src/utils/utils.js", "processArguments: expectedArgs has to be an array");
+
     let counter = 0;
-    let num, role, member, channel;
+    let amount, num, role, member, channel;
+
     for (const argument of expectedArgs) {
-        if (!argument.type) return console.log("You didn't provide an argument type.");
-        switch (argument.type) {
-            case "NUMBER":
-                num = Number(msgArgs[counter]);
-                if (!msgArgs[counter] || isNaN(num)) {
-                    if (argument.prompt) message.channel.send(argument.prompt);
-                    return
-                }
-                else msgArgs[counter] = num;
-                break;
-            case "CHANNEL":
-                if (!msgArgs[counter]) {
-                    if (argument.prompt) message.channel.send(argument.prompt)
-                    return
-                }
-                if (msgArgs[counter].startsWith("<#") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(2, -1)
-                channel = message.guild.channels.cache.get(msgArgs[counter]);
-                if (!channel) {
-                    if (argument.prompt) message.channel.send(argument.prompt);
-                    return
-                };
-                msgArgs[counter] = channel;
-                break;
-            case "ROLE":
-                if (!msgArgs[counter]) {
-                    if (argument.prompt) message.channel.send(argument.prompt)
-                    return
-                }
-                if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
-                role = message.guild.roles.cache.get(msgArgs[counter])
-                if (!role) {
-                    if (argument.prompt) message.channel.send(argument.prompt)
-                    return
-                }
-                msgArgs[counter] = role;
-                break;
-            case "AUTHOR_OR_MEMBER":
-                if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
-                member = message.guild.members.cache.get(msgArgs[counter])
-                if (!member) msgArgs[counter] = message.member
-                else msgArgs[counter] = member
-                break;
-            case "ROLE_OR_MEMBER":
-                if (!msgArgs[counter]) {
-                    if (argument.prompt) message.channel.send(argument.prompt)
-                    return
-                }
-                if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
-                role = message.guild.roles.cache.get(msgArgs[counter])
-                if (!role) {
-                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
-                    member = message.guild.members.cache.get(msgArgs[counter])
-                    if (!member) return
+        if (typeof argument !== "object" || argument === null) return log("WARNING", "src/utils/utils.js", "processArguments: argument is not an object");
+
+        if (!argument.type) return log("WARNING", "src/utils/utils.js", "processArguments: no argument type was provided");
+
+        if (typeof argument.type !== "string") return log("WARNING", "src/utils/utils.js", "processArguments: argument type is not a string")
+
+        amount = isNaN(argument.amount) ? 1 : ( parseInt(argument.amount) <= 0 ? 1 : parseInt(argument.prompt) )
+        
+        for (var i = 0; i < amount; i++) {
+            switch (argument.type) {
+                case "NUMBER":
+                    num = Number(msgArgs[counter]);
+                    if (!msgArgs[counter] || isNaN(num)) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    else msgArgs[counter] = num;
+                    break;
+
+                case "INTEGER":
+                    if (isNaN(msgArgs[counter]) || isNaN(parseFloat(msgArgs[counter]))) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    msgArgs[counter] = parseInt(msgArgs[counter]);
+                    break;
+
+                case "CHANNEL":
+                    if (!msgArgs[counter]) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    if (msgArgs[counter].startsWith("<#") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(2, -1)
+                    channel = message.guild.channels.cache.get(msgArgs[counter]);
+                    if (!channel) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    };
+                    msgArgs[counter] = channel;
+                    break;
+
+                case "ROLE":
+                    if (!msgArgs[counter]) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
+                    role = message.guild.roles.cache.get(msgArgs[counter])
+                    if (!role) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    msgArgs[counter] = role;
+                    break;
+
+                case "AUTHOR_OR_MEMBER":
+                    if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                    member = message.guild.member(msgArgs[counter])
+                    if (!member) msgArgs[counter] = message.member
                     else msgArgs[counter] = member
-                } else msgArgs[counter] = role
-                break;
-            case "STRING":
-                if (!msgArgs[counter]) {
-                    if (argument.prompt) message.channel.send(argument.prompt)
-                    return
-                }
-                break;
-            case "MEMBER":
-                if (!msgArgs[counter]) {
-                    if (argument.prompt) message.channel.send(argument.prompt)
-                    return
-                }
-                if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
-                member = message.guild.members.cache.get(msgArgs[counter])
-                if (!member) return
-                else msgArgs[counter] = member
-                break;
-            default:
-                return console.log(`The argument type ${argument.type} doesn't exist.`);
+                    if (argument.returnUsers) msgArgs[counter] = msgArgs[counter].user
+                    break;
+
+                case "ROLE_OR_MEMBER":
+                    if (!msgArgs[counter]) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
+                    role = message.guild.roles.cache.get(msgArgs[counter])
+                    if (!role) {
+                        if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                        member = message.guild.member(msgArgs[counter])
+                        if (!member) return msgArgs = { invalid: true, prompt: argument.prompt }
+                        else msgArgs[counter] = member
+                    } else msgArgs[counter] = role
+                    break;
+
+                case "SOMETHING":
+                    if (!msgArgs[counter]) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    break;
+
+                case "MEMBER":
+                    if (!msgArgs[counter]) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                    member = message.guild.member(msgArgs[counter])
+                    if (!member) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    else msgArgs[counter] = member
+                    break;
+
+                case "IMAGE":
+                    if (message.attachments.array().length === 0) {
+                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    }
+                    msgArgs[counter] = message.attachments.array()[0]
+                    break;
+
+                default:
+                    return log("WARNING", "src/utils/utils.js", `processArguments: the argument type '${argument.type}' doesn't exist`);
+            }
+            counter++
         }
-        counter++
     }
     return msgArgs;
 }
@@ -99,7 +132,7 @@ function processArguments(message, expectedArgs, msgArgs) {
  */
 async function blacklist(client, userID) {
     if (client.blacklistCache.has(userID)) return
-    await client.DBConfig.findByIdAndUpdate('blacklist', {$push: {'blacklisted': userID}}, { new: true, upsert: true, setDefaultsOnInsert: true })
+    await client.DBConfig.findByIdAndUpdate('blacklist', { $push: { 'blacklisted': userID } }, { new: true, upsert: true, setDefaultsOnInsert: true })
     client.blacklistCache.add(userID)
 }
 
@@ -110,7 +143,7 @@ async function blacklist(client, userID) {
  */
 async function whitelist(client, userID) {
     if (!client.blacklistCache.has(userID)) return
-    await client.DBConfig.findByIdAndUpdate('blacklist', {$pull: {'blacklisted': userID}}, { new: true, upsert: true, setDefaultsOnInsert: true })
+    await client.DBConfig.findByIdAndUpdate('blacklist', { $pull: { 'blacklisted': userID } }, { new: true, upsert: true, setDefaultsOnInsert: true })
     client.blacklistCache.delete(userID)
 }
 
@@ -247,7 +280,17 @@ function missingPermissions(member, perms){
     missingPerms[0]
 }
 
+/**
+ * Function to shorten down console logs
+ * @param {String} type - The type of log (SUCCESS, WARNING, ERROR)
+ * @param {String} path - The path where the console log is coming from
+ * @param {String} text - The message to be displayed
+ */
+function log(type, path, text) {
+    console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${consoleColors[type]}${text}\u001b[0m`)
+}
+
 module.exports = {
-    processArguments, blacklist, whitelist, paginate,
+    processArguments, blacklist, whitelist, paginate, log,
     getReply, randomRange, delay, msToTime, missingPermissions
 }
