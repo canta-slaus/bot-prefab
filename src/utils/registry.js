@@ -28,10 +28,10 @@ async function registerCommands(client, dir) {
                     client.commands.set(name, cmdModule);
 
                     if (category) {
-                        let commands = client.categories.get(category.toLoweCase())
+                        let commands = client.categories.get(category.toLowerCase())
                         if (!commands) commands = [category]
                         commands.push(name)
-                        client.categories.set(category.toLowerCase(), name)
+                        client.categories.set(category.toLowerCase(), commands)
                     } else {
                         log("WARNING", "src/registry.js", `The command '${name}' doesn't have a category, it will default to 'No category'.`)
                         let commands = client.categories.get('no category')
