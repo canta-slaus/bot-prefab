@@ -1,0 +1,20 @@
+# 14/12/2020
+- Added command categories:
+    - If the `help` command is ran, an embed containing all categories will be sent
+    - `help [category name]` will send an embed containing all commands of a category
+    - `help [command name]` will now display the server's current prefix (to do that, inside of `command.usage`/`command.description`/`command.examples` all `PREFIX` will be replaced with the server prefix, so make sure to update your commands)
+    - If no category was given, it will default to `No category`.
+- Fixed guildCreate.js:
+    - If bot doesn't have permissions to send messages in default channel
+    - If bot doesn't have permissions to send messages in "general" channel
+    - If there are no channels the bot can send messages in
+- Updated registry.js:
+    - Added category relevant features
+- Updated main.js:
+    - Added new logs
+    - Stop bot if no connection to MongoDB was established
+- Updated utils.js:
+    - Added `log()`
+- Updated all commands:
+    - Added category
+    - Changed `${PREFIX}` to `PREFIX`
