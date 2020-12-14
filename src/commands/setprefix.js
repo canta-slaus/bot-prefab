@@ -9,7 +9,7 @@ module.exports = {
     serverOwnerOnly: true,
     arguments: [
         {
-            type: 'STRING',
+            type: 'SOMETHING',
             prompt: 'Please enter a new prefix to use!'
         }
     ],
