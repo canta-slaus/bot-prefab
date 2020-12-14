@@ -1,11 +1,11 @@
-const PREFIX = require('../../config/config.json').PREFIX;
 const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { MessageEmbed } = require('discord.js')
 
 module.exports = {
     name: "commands",
+    category: "Utility",
     aliases: ["c"],
-    usage: `- \`${PREFIX}commands\` to display all currently disabled commands\n- \`${PREFIX}commands [disable/enable] [command]\` to disable/enable commands.`,
+    usage: "- \`PREFIXcommands\` to display all currently disabled commands\n- \`PREFIXcommands [disable/enable] [command]\` to disable/enable commands.",
     canNotDisable: true,
     serverOwnerOnly: true,
     

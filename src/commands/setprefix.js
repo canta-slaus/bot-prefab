@@ -1,12 +1,11 @@
-const PREFIX = require('../../config/config.json').PREFIX;
-
 const prefixRegExp = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]{1,15}$/;
 
 module.exports = {
     name: "setprefix",
+    category: "Utility",
     aliases: ["sp"],
     description: "Set a new prefix for your server.",
-    usage: `\`${PREFIX}setprefix [newprefix]\``,
+    usage: "\`PREFIXsetprefix [newprefix]\`",
     serverOwnerOnly: true,
     arguments: [
         {

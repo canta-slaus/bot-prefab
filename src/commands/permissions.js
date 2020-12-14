@@ -1,4 +1,3 @@
-const PREFIX = require('../../config/config.json').PREFIX;
 const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { MessageEmbed } = require('discord.js');
 const { getReply } = require('../utils/utils');
@@ -42,8 +41,10 @@ const permsRegEx = /^[0-4a-zA-Z]{1,31}$/
 
 module.exports = {
     name: "permissions",
+    category: "Utility",
     aliases: ["p"],
-    usage: `- \`${PREFIX}permissions [command]\` to display and change the permissions someone needs to use this command.`,
+    description: "Set your own custom permissions that your users need to run this command in your server.",
+    usage: "- \`PREFIXpermissions [command]\` to display and change the permissions someone needs to use this command.",
     serverOwnerOnly: true,
     arguments: [
         {
