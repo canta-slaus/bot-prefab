@@ -57,7 +57,7 @@ function defaultHelp(client, message, guildPrefix) {
     .setDescription(`Use \`${guildPrefix}help [category]\` to get more info on a category, for example: \`${guildPrefix}help misc\``)
     .setTimestamp()
     .setThumbnail(client.user.displayAvatarURL())
-    .addField('Categories', client.categories.map(c => '> ' + c[0]).join('\n'))
+    .addField('Categories', client.categories.map(c => '> ' + c[0]).join('\n\n'))
 
     message.channel.send(hEmbed);
 }
