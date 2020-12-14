@@ -1,8 +1,7 @@
-const PREFIX = require('../../config/config.json').PREFIX;
-
 module.exports = {
     name: "",
     aliases: [],
+    category: "",
     description: "",
     usage: "",
     examples: "",
@@ -30,11 +29,15 @@ Attributes:
         - aliases for the command
         - default: no aliases
 
+    > category [String, needed]
+        - category of the command (to display all commands of a category in the help message)
+        - default: No category
+
     > usage: [String, optional]
         - how to use the command (will be displayed in the help message)
         - default: no usage
 
-    > description: [String, needed]
+    > description: [String, optional]
         - information about the command (will be displayed in the help message)
 
     > examples [String, optional]
