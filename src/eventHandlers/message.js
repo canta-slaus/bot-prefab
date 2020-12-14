@@ -1,4 +1,4 @@
-const { processArguments, msToTime, missingPermissions } = require("../utils/utils")
+const { processArguments, msToTime, missingPermissions, log } = require("../utils/utils")
 const { Collection } = require("discord.js")
 const cooldowns = new Collection();
 const { devs, someServers } = require('../../config/config.json')
