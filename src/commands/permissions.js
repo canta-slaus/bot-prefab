@@ -48,7 +48,7 @@ module.exports = {
     serverOwnerOnly: true,
     arguments: [
         {
-            type: 'STRING',
+            type: 'SOMETHING',
             prompt: 'Please specify a command.'
         }
     ],
@@ -98,8 +98,10 @@ module.exports = {
             if (perms.content.toLowerCase() === 'clear') {
                 update[`commandPerms.${command.name}`] = ""
                 await client.DBGuild.findByIdAndUpdate(message.guild.id, { $unset: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
-                delete guildInfo['commandPerms'][command.name]
-                client.guildInfoCache.set(message.guild.id, guildInfo)
+                if (guildInfo.commandPerms) {
+                    delete guildInfo['commandPerms'][command.name]
+                    client.guildInfoCache.set(message.guild.id, guildInfo)
+                }
             } else {
                 if (!permsRegEx.test(perms.content)) return message.channel.send(`${message.author.username}, sorry, that isn't a valid permission string.`)
                 const permsArray = []
