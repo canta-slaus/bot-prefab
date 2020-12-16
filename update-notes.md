@@ -14,7 +14,7 @@
 - Updated `registerCommands()`
     - added additional checks: e.g. when a command name or alias has already been added
     - added support for multiple command directories (e.g. you can do `registerCommands(client, '../commands', '../cmds')`)
-- Update `message.js`
+- Updated `message.js`
     - added the cooldowns feature
     - moved client permissions check up a bit
 - Added some small JSDocs snippets to `message.js` and `guildCreate.js` (will improve those in future updates for better code-autocompletion)
