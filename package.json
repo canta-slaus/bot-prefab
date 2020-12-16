@@ -8,6 +8,7 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.4.0",
-    "mongoose": "^5.10.14"
+    "mongoose": "^5.10.14",
+    "ms": "^2.1.3"
   }
 }
