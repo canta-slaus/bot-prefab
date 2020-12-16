@@ -1,5 +1,10 @@
+const { Guild, Client } = require('discord.js')
 const PREFIX = require('../../config/config.json').PREFIX;
 
+/**
+ * Helper function to find a channel the bot can send a message in
+ * @param {Guild} guild 
+ */
 const getDefaultChannel = (guild) => {
     let channel;
     // Get "original" default channel
@@ -23,6 +28,11 @@ const getDefaultChannel = (guild) => {
         .first();
 }
 
+/**
+ * guildCreate event
+ * @param {Client} client 
+ * @param {Guild} guild 
+ */
 module.exports = async (client, guild) => {
     if (guild.available) {
         const channel = getDefaultChannel(guild);
