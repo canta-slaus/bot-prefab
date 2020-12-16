@@ -1,3 +1,24 @@
+# 16/12/2020
+- Added `cooldowns` command:
+    - you can now change the cooldowns of a command per server for each role individually
+    - added `commandCooldowns` to the `guildSchema`
+    - added `roleDelete.js` to check if a role with a set cooldown has been deleted (to delete it from the database and cache)
+    - added the needed checks in `message.js`
+    - added the package `ms` (to convert user input into milliseconds/display the cooldown in readable time and not ms)
+- Updated commands
+    - made some parts prettier and removed unnecessary code
+    - added client perms to them
+    - added timeout message to `permissions` command if they don't react to the embed
+- Updated `paginate()`
+    - added additional checks: e.g. when the message gets deleted while adding reactions, or inside the collector end event (because it also triggers if the message was deleted)
+- Updated `registerCommands()`
+    - added additional checks: e.g. when a command name or alias has already been added
+    - added support for multiple command directories (e.g. you can do `registerCommands(client, '../commands', '../cmds')`)
+- Update `message.js`
+    - added the cooldowns feature
+    - moved client permissions check up a bit
+- Added some small JSDocs snippets to `message.js` and `guildCreate.js` (will improve those in future updates for better code-autocompletion)
+
 # 14/12/2020
 - Added command categories:
     - If the `help` command is ran, an embed containing all categories will be sent
