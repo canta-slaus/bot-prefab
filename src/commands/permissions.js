@@ -52,10 +52,12 @@ module.exports = {
             prompt: 'Please specify a command.'
         }
     ],
+    clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS', 'ADD_REACTIONS'],
 
     execute: async function(client, message, args) {
-        const command = await client.commands.get(args[0]) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(args[0]));
+        const command = client.commands.get(args[0].toLowerCase())
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`)
+
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let commandPerms = guildInfo.commandPerms;
 
@@ -78,37 +80,48 @@ module.exports = {
         const filter = (reaction, user) => {
             return reaction.emoji.name === '🔁' && user.id === message.author.id;
         };
-        const collector = msg.createReactionCollector(filter, { time: 30000, max: 1});
+        const collector = msg.createReactionCollector(filter, { time: 30000, max: 1 });
+
         collector.on('end', async (collected) => {
-            if (collected.size === 0) return;
+            if (collected.size === 0) return message.channel.send(`${message.author.username}, sorry, if you want to change the permissions, run the command again and react in time.`);
+
             let text = "";
+
             const a = Object.entries(permissions)
+
             for (var i = 0; i < a.length; i++) {
                 text += `\`${a[i][0]}\` - \`${a[i][1]}\`\n`
             }
+
             text += 'Reply with the permissions that you want users to have in order to use this command, '
             text += 'e.g.: \`cd2\` If you want them to have the permissions to kick members, ban members and manage roles in order to use this command.\n'
             text += 'Reply with \`clear\` to reset permissions.'
+
             embed.setFooter('')
             .setDescription(text)
             message.channel.send(embed)
+
             const perms = await getReply(message);
             if (!perms) return message.channel.send(`${message.author.username}, sorry, time is up!`)
+
             const update = {}
             if (perms.content.toLowerCase() === 'clear') {
                 update[`commandPerms.${command.name}`] = ""
                 await client.DBGuild.findByIdAndUpdate(message.guild.id, { $unset: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
+
                 if (guildInfo.commandPerms) {
                     delete guildInfo['commandPerms'][command.name]
                     client.guildInfoCache.set(message.guild.id, guildInfo)
                 }
             } else {
                 if (!permsRegEx.test(perms.content)) return message.channel.send(`${message.author.username}, sorry, that isn't a valid permission string.`)
+
                 const permsArray = []
                 for (var i = 0; i < perms.content.length; i++) {
                     if (permsArray.includes(permissions[perms.content[i]])) continue;
                     permsArray.push(permissions[perms.content[i]])
                 }
+
                 update[`commandPerms.${command.name}`] = permsArray
                 guildInfo.commandPerms = guildInfo.commandPerms ? guildInfo.commandPerms : {}
                 guildInfo.commandPerms[command.name] = permsArray

@@ -6,6 +6,7 @@ module.exports = {
     aliases: ["pong"],
     description: "Get the bots current ping.",
     usage: "\`PREFIXping\`",
+    clientPerms: ['SEND_MESSAGES'],
     
     execute: async function(client, message, args) {
         const msg = await message.channel.send("Ping?");

@@ -12,6 +12,7 @@ module.exports = {
     description: "Get help on commands.",
     usage: "To get help on a specific command, use \`PREFIXhelp [command name]\` (without the [ ]).\nFor a full list of all commands, simply use \`PREFIXhelp\`.",
     examples: "\`PREFIXhelp ping\`",
+    clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     
     execute: async function(client, message, args) {
         let guildPrefix = client.guildInfoCache.get(message.guild.id).prefix;
