@@ -42,14 +42,15 @@ module.exports = {
             if (command.aliases && command.aliases.length !== 0) hEmbed.addField("Aliases", '`' + command.aliases.join('`, `') + '`')
 
             if (command.examples) hEmbed.addField("Examples", replacePrefix(command.examples, guildPrefix))
-
-            if (command.cooldown || (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name])) {
-                cd = command.cooldown
+            
+            let cd;
+            if (command.cooldown) cd = command.cooldown
+            if (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name]) {
                 let roles = Object.keys(guildInfo.commandCooldowns[command.name])
                 let highestRole = message.member.roles.cache.filter(role => roles.includes(role.id)).sort((a, b) =>  b.position - a.position).first()
                 if (highestRole) cd = guildInfo.commandCooldowns[command.name][highestRole.id]
-                if (cd) hEmbed.addField("Cooldown", `${msToTime(cd)}`)
             }
+            if (cd) hEmbed.addField("Cooldown", `${msToTime(cd)}`)
 
             if (client.guildInfoCache.get(message.guild.id).disabledCommands.includes(command.name)) hEmbed.setAuthor('This command is currently disabled in this server.')
             
