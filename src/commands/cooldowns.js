@@ -70,6 +70,9 @@ module.exports = {
                 
                 embed.setDescription(`The cooldown for the role <@&${roleID}> has been set to \`${msToTime(time)}\`.`)
                 break;
+            default:
+                embed.setDescription(`${message.author.username}, please check the usage of this command.`)
+                return message.channel.send(embed)
         }
 
         message.channel.send(embed)
@@ -77,7 +80,5 @@ module.exports = {
         guildInfo.commandCooldowns = commandCooldowns
         client.guildInfoCache.set(message.guild.id, guildInfo)
         await client.DBGuild.findByIdAndUpdate(message.guild.id, { $set: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
-
-        console.log(client.guildInfoCache.get(message.guild.id))
     }
 }
