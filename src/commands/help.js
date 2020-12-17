@@ -1,4 +1,5 @@
 const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
+const { msToTime } = require('../utils/utils');
 const { MessageEmbed } = require("discord.js");
 
 const replacePrefix = (string, guildPrefix) => {
@@ -15,7 +16,9 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     
     execute: async function(client, message, args) {
-        let guildPrefix = client.guildInfoCache.get(message.guild.id).prefix;
+        let guildInfo = client.guildInfoCache.get(message.guild.id)
+        let guildPrefix = guildInfo.prefix
+
         if (!args.length) {
             return defaultHelp(client, message, guildPrefix);
         }
@@ -30,12 +33,24 @@ module.exports = {
             .setTitle(`${command.name}`)
             .setAuthor(command.category ? command.category : 'No category')
             .setColor(EMBED_COLOR)
-            .setTimestamp()
+            .setTimestamp();
             
             if (command.description) hEmbed.setDescription(replacePrefix(command.description, guildPrefix))
+
             if (command.usage) hEmbed.addField("Usage", replacePrefix(command.usage, guildPrefix))
+
             if (command.aliases && command.aliases.length !== 0) hEmbed.addField("Aliases", '`' + command.aliases.join('`, `') + '`')
+
             if (command.examples) hEmbed.addField("Examples", replacePrefix(command.examples, guildPrefix))
+
+            if (command.cooldown || (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name])) {
+                cd = command.cooldown
+                let roles = Object.keys(guildInfo.commandCooldowns[command.name])
+                let highestRole = message.member.roles.cache.filter(role => roles.includes(role.id)).sort((a, b) =>  b.position - a.position).first()
+                if (highestRole) cd = guildInfo.commandCooldowns[command.name][highestRole.id]
+                if (cd) hEmbed.addField("Cooldown", `${msToTime(cd)}`)
+            }
+
             if (client.guildInfoCache.get(message.guild.id).disabledCommands.includes(command.name)) hEmbed.setAuthor('This command is currently disabled in this server.')
             
             message.channel.send(hEmbed);
