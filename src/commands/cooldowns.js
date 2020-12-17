@@ -62,7 +62,7 @@ module.exports = {
 
                 let time = ms(args.slice(3).join(''))
 
-                if (command.cooldown ? command.cooldown : 0 === time) return message.channel.send(`${message.author.username}, that's already the default cooldown for this command.`)
+                if ((command.cooldown ? command.cooldown : 0) === time / 1000) return message.channel.send(`${message.author.username}, that's already the default cooldown for this command.`)
                 if (!commandCooldowns[command.name]) commandCooldowns[command.name] = { }
                 commandCooldowns[command.name][roleID] = time
 
