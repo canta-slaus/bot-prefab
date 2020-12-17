@@ -61,7 +61,7 @@ module.exports = {
                 if (!args[3]) return message.channel.send(`${message.author.username}, please specify a cooldown.`)
 
                 let time = ms(args.slice(3).join(''))
-
+                if (time > 86400000) return message.channel.send(`${message.author.username}, the cooldown can't be longer than 24h.`)
                 if ((command.cooldown ? command.cooldown : 0) === time / 1000) return message.channel.send(`${message.author.username}, that's already the default cooldown for this command.`)
                 if (!commandCooldowns[command.name]) commandCooldowns[command.name] = { }
                 commandCooldowns[command.name][roleID] = time
