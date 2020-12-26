@@ -10,9 +10,11 @@ const client = new discord.Client({ ws: { intents: discord.Intents.ALL } });
     client.commands = new discord.Collection();
     client.categories = new discord.Collection();
     client.guildInfoCache = new discord.Collection();
+    client.userInfoCache = new discord.Collection();
 
     client.DBGuild = require('../schemas/guildSchema');
     client.DBConfig = require('../schemas/config');
+    client.DBUser = require('../schemas/userSchema');
 
     await registerEvents(client, '../eventHandlers');
     await registerCommands(client, '../commands');
