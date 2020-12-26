@@ -1,11 +1,10 @@
-const PREFIX = require('../../config/config.json').PREFIX;
-
+/**
+ * @type {import('../typings.d').Command}
+ */
 module.exports = {
     name: "ping",
     category: "Misc",
     aliases: ["pong"],
-    description: "Get the bots current ping.",
-    usage: "\`PREFIXping\`",
     clientPerms: ['SEND_MESSAGES'],
     
     execute: async function(client, message, args) {

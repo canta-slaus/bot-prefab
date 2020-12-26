@@ -3,13 +3,13 @@ const { MessageEmbed } = require('discord.js')
 const ms = require('ms')
 const { msToTime } = require('../utils/utils')
 
+/**
+ * @type {import('../typings.d').Command}
+ */
 module.exports = {
     name: "cooldowns",
     category: "Utility",
     aliases: ["cd"],
-    usage: `- \`PREFIXcooldowns [command]\` to display all modified cooldowns for a command and update them.
-            - \`PREFIXcooldowns [command] set [role] [cooldown]\` to set the cooldown for this command to a certain value
-            - \`PREFIXcooldowns [command] clear [role]\` to use the default cooldown for this command`,
     serverOwnerOnly: true,
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 

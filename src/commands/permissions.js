@@ -20,31 +20,32 @@ const permissions = {
     'o': 'MANAGE_MESSAGES',
     'p': 'EMBED_LINKS',
     'q': 'ATTACH_FILES',
-    'q': 'READ_MESSAGE_HISTORY',
-    'r': 'MENTION_EVERYONE',
-    's': 'USE_EXTERNAL_EMOJIS',
-    't': 'VIEW_GUILD_INSIGHTS',
-    'u': 'CONNECT',
-    'v': 'SPEAK',
-    'w': 'MUTE_MEMBERS',
-    'x': 'DEAFEN_MEMBERS',
-    'y': 'MOVE_MEMBERS',
-    'z': 'USE_VAD',
-    '0': 'CHANGE_NICKNAME',
-    '1': 'MANAGE_NICKNAMES',
-    '2': 'MANAGE_ROLES',
-    '3': 'MANAGE_WEBHOOKS',
-    '4': 'MANAGE_EMOJIS',
+    'r': 'READ_MESSAGE_HISTORY',
+    's': 'MENTION_EVERYONE',
+    't': 'USE_EXTERNAL_EMOJIS',
+    'u': 'VIEW_GUILD_INSIGHTS',
+    'v': 'CONNECT',
+    'w': 'SPEAK',
+    'x': 'MUTE_MEMBERS',
+    'y': 'DEAFEN_MEMBERS',
+    'z': 'MOVE_MEMBERS',
+    '0': 'USE_VAD',
+    '1': 'CHANGE_NICKNAME',
+    '2': 'MANAGE_NICKNAMES',
+    '3': 'MANAGE_ROLES',
+    '4': 'MANAGE_WEBHOOKS',
+    '5': 'MANAGE_EMOJIS',
 }
 
 const permsRegEx = /^[0-4a-zA-Z]{1,31}$/
 
+/**
+ * @type {import('../typings.d').Command}
+ */
 module.exports = {
     name: "permissions",
     category: "Utility",
     aliases: ["p"],
-    description: "Set your own custom permissions that your users need to run this command in your server.",
-    usage: "- \`PREFIXpermissions [command]\` to display and change the permissions someone needs to use this command.",
     serverOwnerOnly: true,
     arguments: [
         {

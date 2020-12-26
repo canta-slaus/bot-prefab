@@ -1,11 +1,13 @@
 const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { MessageEmbed } = require('discord.js')
 
+/**
+ * @type {import('../typings.d').Command}
+ */
 module.exports = {
     name: "commands",
     category: "Utility",
     aliases: ["c"],
-    usage: "- \`PREFIXcommands\` to display all currently disabled commands\n- \`PREFIXcommands [disable/enable] [command]\` to disable/enable commands.",
     canNotDisable: true,
     serverOwnerOnly: true,
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],

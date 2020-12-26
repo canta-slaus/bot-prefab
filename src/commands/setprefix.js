@@ -1,11 +1,12 @@
 const prefixRegExp = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]{1,15}$/;
 
+/**
+ * @type {import('../typings.d').Command}
+ */
 module.exports = {
     name: "setprefix",
     category: "Utility",
     aliases: ["sp"],
-    description: "Set a new prefix for your server.",
-    usage: "\`PREFIXsetprefix [newprefix]\`",
     serverOwnerOnly: true,
     arguments: [
         {
