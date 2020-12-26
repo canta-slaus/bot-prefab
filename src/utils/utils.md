@@ -17,6 +17,9 @@ arguments: [
 ```
 to your command and the function will take care of the rest. If the user didn't provide a number, it will send a message as defined in the `prompt` and won't execute the command. If they do send a valid number, it will continue. The order of the arguments will be kept, that is:
 ```js
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "test",
     description: "Test command to demonstrate the arguments property.",
@@ -30,7 +33,7 @@ module.exports = {
             prompt: 'Please enter a valid number.'
         },
         {
-            type: 'STRING',
+            type: 'SOMETHING',
             prompt: 'Please enter an operation'
         }
     ],
@@ -55,6 +58,9 @@ const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { MessageEmbed } = require('discord.js')
 const { paginate } = require('../utils/utils')
 
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "test",
     description: "test command to demonstrate the pagination function",
@@ -78,6 +84,9 @@ const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { MessageEmbed } = require('discord.js')
 const { paginate } = require('../utils/utils')
 
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "test",
     description: "test command to demonstrate the pagination function",
@@ -103,6 +112,9 @@ const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { MessageEmbed } = require('discord.js')
 const { paginate } = require('../utils/utils')
 
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "test",
     description: "test command to demonstrate the pagination function",
@@ -141,12 +153,15 @@ To blacklist someone, simply require the functions `blacklist, whitelist` define
 ```js
 const { blacklist } = require('../../utils/utils')
 
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "test",
-    description: "Get the bots current ping.",
+    description: "Test command to demonstrate blacklisting.",
     
     execute: async function(client, message, args) {
-        blacklist(client, message.mentions.users.first())
+        blacklist(client, message.mentions.users.first().id)
     }
 }
 ```
@@ -167,6 +182,9 @@ This function helps you await a users reply. Let's say you have a quiz command a
 ```js
 const { getReply } = require('../../utils/utils')
 
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "test",
     description: "Test command to demonstrate \`getReply()\`",
