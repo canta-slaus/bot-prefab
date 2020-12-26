@@ -1,0 +1,33 @@
+{
+    "english": {
+        "commands": {
+            "description": "Check the disabled commands and enable/disable commands.",
+            "usage": "- `PREFIXcommands` to display all currently disabled commands\n- `PREFIXcommands [disable/enable] [command]` to disable/enable commands."
+        },
+        "cooldowns": {
+            "description": "Check the all the custom cooldowns of a command and add new cooldowns.",
+            "usage": "- `PREFIXcooldowns [command]` to display all modified cooldowns for a command and update them.\n- `PREFIXcooldowns [command] set [role] [cooldown]` to set the cooldown for this command to a certain value.- `PREFIXcooldowns [command] clear [role]` to use the default cooldown for this command."
+        },
+        "help": {
+            "description": "Get help on commands.",
+            "usage": "To get help on a specific command, use `PREFIXhelp [command name]` (without the [ ]).\nFor a full list of all commands, simply use `PREFIXhelp`.",
+            "examples": "`PREFIXhelp ping`"
+        },
+        "permissions": {
+            "description": "Set your own custom permissions that your users need to run this command in your server.",
+            "usage": "- `PREFIXpermissions [command]` to display and change the permissions someone needs to use this command."
+        },
+        "ping": {
+            "description": "Get the bots current ping.",
+            "usage": "`PREFIXping`"
+        },
+        "setprefix": {
+            "description": "Set a new prefix for your server.",
+            "usage": "`PREFIXsetprefix [new prefix]`"
+        },
+        "setlanguage": {
+            "description": "Set the language you want to get help on commands with.",
+            "usage": "- `PREFIXsetlanguage [new language]` to set a new language\n- `PREFIXsetlanguage` to get a list of available languages."
+        }
+    }
+}

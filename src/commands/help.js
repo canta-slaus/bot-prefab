@@ -1,23 +1,33 @@
 const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
-const { msToTime } = require('../utils/utils');
-const { MessageEmbed } = require("discord.js");
+const { msToTime } = require('../utils/utils.js');
+const languages = require('../../config/languages.json');
+const { MessageEmbed, Message } = require("discord.js");
 
 const replacePrefix = (string, guildPrefix) => {
     return string.replace(/PREFIX/g, guildPrefix);
 };
 
+/**
+ * @type {import('../typings.d').Command}
+ */
 module.exports = {
     name: "help",
     category: "Misc",
     aliases: ["h"],
-    description: "Get help on commands.",
-    usage: "To get help on a specific command, use \`PREFIXhelp [command name]\` (without the [ ]).\nFor a full list of all commands, simply use \`PREFIXhelp\`.",
-    examples: "\`PREFIXhelp ping\`",
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     
     execute: async function(client, message, args) {
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let guildPrefix = guildInfo.prefix
+
+        let userInfo = client.userInfoCache.get(message.author.id) 
+        if (!userInfo) {
+            userInfo = await client.DBUser.findById(message.author.id)
+            if (!userInfo) userInfo = { language: 'english' }
+            client.userInfoCache.set(message.author.id, userInfo)
+        }
+
+        let language = userInfo.language
 
         if (!args.length) {
             return defaultHelp(client, message, guildPrefix);
@@ -35,13 +45,13 @@ module.exports = {
             .setColor(EMBED_COLOR)
             .setTimestamp();
             
-            if (command.description) hEmbed.setDescription(replacePrefix(command.description, guildPrefix))
+            if (languages[language][command.name].description) hEmbed.setDescription(replacePrefix(languages[language][command.name].description, guildPrefix))
 
-            if (command.usage) hEmbed.addField("Usage", replacePrefix(command.usage, guildPrefix))
+            if (languages[language][command.name].usage) hEmbed.addField("Usage", replacePrefix(languages[language][command.name].usage, guildPrefix))
 
             if (command.aliases && command.aliases.length !== 0) hEmbed.addField("Aliases", '`' + command.aliases.join('`, `') + '`')
 
-            if (command.examples) hEmbed.addField("Examples", replacePrefix(command.examples, guildPrefix))
+            if (languages[language][command.name].examples) hEmbed.addField("Examples", replacePrefix(languages[language][command.name].examples, guildPrefix))
 
             let cd;
             if (command.cooldown) cd = command.cooldown
@@ -67,6 +77,12 @@ module.exports = {
     }
 }
 
+/**
+ * Default help message method
+ * @param {import('../typings.d').myClient} client 
+ * @param {Message} message 
+ * @param {string} guildPrefix 
+ */
 function defaultHelp(client, message, guildPrefix) {
     let hEmbed = new MessageEmbed()
     .setTitle("Command Categories")
