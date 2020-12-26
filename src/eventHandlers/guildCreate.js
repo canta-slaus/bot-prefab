@@ -1,4 +1,4 @@
-const { Guild, Client } = require('discord.js')
+const { Guild } = require('discord.js');
 const PREFIX = require('../../config/config.json').PREFIX;
 
 /**
@@ -29,7 +29,7 @@ const getDefaultChannel = (guild) => {
 
 /**
  * guildCreate event
- * @param {Client} client 
+ * @param {import('../typings.d').myClient} client 
  * @param {Guild} guild 
  */
 module.exports = async (client, guild) => {

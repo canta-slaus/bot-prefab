@@ -1,11 +1,12 @@
 const { processArguments, msToTime, missingPermissions, log } = require("../utils/utils")
-const { Collection, Client, Message } = require("discord.js")
+const { Collection, Message } = require("discord.js")
 const cooldowns = new Collection();
-const { devs, someServers } = require('../../config/config.json')
+const { devs, someServers } = require('../../config/config.json');
 const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
- * @param {Client} client 
+ * message event
+ * @param {import('../typings.d').myClient} client 
  * @param {Message} message 
  */
 module.exports = async (client, message) => {
@@ -14,12 +15,9 @@ module.exports = async (client, message) => {
 
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         if (!guildInfo) {
-            const fetch = await client.DBGuild.findByIdAndUpdate(message.guild.id, {}, { new: true, upsert: true, setDefaultsOnInsert: true });
-            guildInfo = {};
-            guildInfo['prefix'] = fetch.prefix;
-            if (fetch.disabledCommands) guildInfo.disabledCommands = fetch.disabledCommands;
-            if (fetch.commandPerms) guildInfo.commandPerms = fetch.commandPerms
-            if (fetch.commandCooldowns) guildInfo.commandCooldowns = fetch.commandCooldowns
+            const fetch = await client.DBGuild.findByIdAndUpdate(message.guild.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
+            guildInfo = fetch
+            delete guildInfo._id
             client.guildInfoCache.set(message.guild.id, guildInfo)
         }
         
@@ -77,7 +75,10 @@ module.exports = async (client, message) => {
         }
 
         if (command.arguments && command.arguments.length !== 0) msgargs = processArguments(message, msgargs, command.arguments)
-        if (msgargs.invalid) return message.channel.send(msgargs.prompt);
+        if (msgargs.invalid) {
+            if (msgargs.prompt) return message.channel.send(msgargs.prompt);
+            return;
+        }
         command.execute(client, message, msgargs);
     } catch (e) {
         log("ERROR", "src/eventHandlers/message.js", e.message)

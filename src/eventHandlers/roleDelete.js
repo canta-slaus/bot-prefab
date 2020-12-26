@@ -1,20 +1,17 @@
-const { Client, Role } = require('discord.js')
+const { Role } = require('discord.js');
 
 /**
- * guildUpdate event
- * @param {Client} client 
+ * roleDelete event
+ * @param {import('../typings.d').myClient} client 
  * @param {Role} role 
  */
 module.exports = async (client, role) => {
     let guildInfo = client.guildInfoCache.get(role.guild.id)
     if (!guildInfo) {
         const fetch = await client.DBGuild.findByIdAndUpdate(role.guild.id, {}, { new: true, upsert: true, setDefaultsOnInsert: true });
-        guildInfo = {};
-        guildInfo['prefix'] = fetch.prefix;
-        if (fetch.disabledCommands) guildInfo.disabledCommands = fetch.disabledCommands;
-        if (fetch.commandPerms) guildInfo.commandPerms = fetch.commandPerms
-        if (fetch.commandCooldowns) guildInfo.commandCooldowns = fetch.commandCooldowns
-        client.guildInfoCache.set(role.guild.id, guildInfo)
+        guildInfo = fetch
+        delete guildInfo._id
+        client.guildInfoCache.set(message.guild.id, guildInfo)
     }
 
     let commandCooldowns = guildInfo.commandCooldowns || {}
