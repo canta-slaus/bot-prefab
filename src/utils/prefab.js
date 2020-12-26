@@ -1,3 +1,6 @@
+/**
+ * @type {import('../typings.d').Command} 
+ */
 module.exports = {
     name: "",
     aliases: [],
@@ -82,7 +85,7 @@ Attributes:
                 prompt: String
             }
 
-        - ArgumentType: NUMBER, INTEGER, CHANNEL, ROLE, AUTHOR_OR_MEMBER, ROLE_OR_MEMBER, STRING
+        - ArgumentType: The argument type that the user should provide
         - prompt: The message to sent if the command user didn't provide                            [optional, will not send a message and simply return if not set]
         - check out `src/utils/utils.md` for more information
 
