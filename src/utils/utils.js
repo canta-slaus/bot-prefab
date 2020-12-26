@@ -1,4 +1,4 @@
-const { Message, User, MessageEmbed, Client, GuildMember } = require("discord.js");
+const { Message, User, MessageEmbed, GuildMember, PermissionResolvable } = require("discord.js");
 const reactions = ['◀️', '⏸️', '▶️']
 const consoleColors = {
     "SUCCESS": "\u001b[32m",
@@ -9,9 +9,9 @@ const consoleColors = {
 /**
  * Function to check if the user has passed in the proper arguments when using a command
  * @param {Message} message - The message to check the arguments for
- * @param {array} msgArgs - The arguments given by the user
- * @param {object[]} expectedArgs - The expected arguments for the command
- * @return {array} Returns the arguments array if all the arguments were as expected, else, returns `undefined/false`
+ * @param {string[]} msgArgs - The arguments given by the user
+ * @param {import('../typings.d').argument[]} expectedArgs - The expected arguments for the command
+ * @returns {ProcessedArguments} Returns the arguments array if all the arguments were as expected, else, returns `undefined/false`
  */
 function processArguments(message, msgArgs, expectedArgs) {
     if (!Array.isArray(expectedArgs)) return log("WARNING", "src/utils/utils.js", "processArguments: expectedArgs has to be an array");
@@ -26,7 +26,7 @@ function processArguments(message, msgArgs, expectedArgs) {
 
         if (typeof argument.type !== "string") return log("WARNING", "src/utils/utils.js", "processArguments: argument type is not a string")
 
-        amount = isNaN(argument.amount) ? 1 : ( parseInt(argument.amount) <= 0 ? 1 : parseInt(argument.prompt) )
+        amount = isNaN(argument.amount) ? 1 : ( parseInt(argument.amount) <= 0 ? 1 : parseInt(argument.amount) )
         
         for (var i = 0; i < amount; i++) {
             switch (argument.type) {
@@ -70,7 +70,7 @@ function processArguments(message, msgArgs, expectedArgs) {
                     break;
 
                 case "AUTHOR_OR_MEMBER":
-                    if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                    if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
                     member = message.guild.member(msgArgs[counter])
                     if (!member) msgArgs[counter] = message.member
                     else msgArgs[counter] = member
@@ -127,7 +127,7 @@ function processArguments(message, msgArgs, expectedArgs) {
 
 /**
  * Function to glocally blacklist a user
- * @param {Client} client - The client object (because the schemas are stored to it)
+ * @param {import('../typings.d').myClient} client - The client object (because the schemas are stored to it)
  * @param {string} userID - The ID of the user to whitelist 
  */
 async function blacklist(client, userID) {
@@ -138,7 +138,7 @@ async function blacklist(client, userID) {
 
 /**
  * Function to globally whitelist a previously blacklisted user
- * @param {Client} client - The client object (because the schemas are stored to it)
+ * @param {import('../typings.d').myClient} client - The client object (because the schemas are stored to it)
  * @param {string} userID - The ID of the user to whitelist 
  */
 async function whitelist(client, userID) {
@@ -151,7 +151,7 @@ async function whitelist(client, userID) {
  * Function to automatically send paginated embeds and switch between the pages by listening to the user reactions
  * @param {Message} message - Used to send the paginated message to the channel, get the user, etc.
  * @param {MessageEmbed[]} embeds - The array of embeds to switch between
- * @param {*} [options] - Optional parameters
+ * @param {object} [options] - Optional parameters
  * @param {number} [options.time] - The max time for createReactionCollector after which all of the reactions disappear
  * @example Examples can be seen in `src/utils/utils.md`
  */
@@ -213,7 +213,7 @@ async function paginate(message, embeds, options) {
  * @param {object} [options] - Optional parameters
  * @param {number} [options.time] - The max time for awaitMessages 
  * @param {User} [options.user] - The user to listen to messages to
- * @param {String[]} [options.words] - Optional accepted words, will aceept any word if not provided
+ * @param {string[]} [options.words] - Optional accepted words, will aceept any word if not provided
  * @param {RegExp} [options.regexp] - Optional RegExp to accept user input that matches the RegExp
  * @return {(Message|Boolean)} Returns the `message` sent by the user if there was one, returns `false` otherwise.
  * @example const reply = await getReply(message, { time: 10000, words: ['yes', 'y', 'n', 'no'] })
@@ -251,7 +251,7 @@ function randomRange(min, max) {
 /**
  * Function to set a timeout
  * @param {number} ms - Time to wait in milliseconds
- * @return {Promise}
+ * @return {promise}
  * @example await delay(5000)
  */
 function delay(ms) {
@@ -260,8 +260,8 @@ function delay(ms) {
 
 /**
  * Function to convert milliseconds into readable time
- * @param {Number} ms - The time in 
- * @return {String} Readable time as a string
+ * @param {number} ms - The time in 
+ * @return {string} Readable time as a string
  */
 function msToTime(ms) {
     let day, hour, minute, seconds;
@@ -279,8 +279,8 @@ function msToTime(ms) {
 /**
  * Function to get all missing permissions of a GuildMember
  * @param {GuildMember} member - The guild member whose missing permissions you want to get
- * @param {String[]} perms - The permissions you want to check for
- * @return {String} Readable string containing all missing permissions
+ * @param {PermissionResolvable} perms - The permissions you want to check for
+ * @return {string} Readable string containing all missing permissions
  */
 function missingPermissions(member, perms){
     const missingPerms = member.permissions.missing(perms)
@@ -293,9 +293,9 @@ function missingPermissions(member, perms){
 
 /**
  * Function to shorten down console logs
- * @param {String} type - The type of log (SUCCESS, WARNING, ERROR)
- * @param {String} path - The path where the console log is coming from
- * @param {String} text - The message to be displayed
+ * @param {string} type - The type of log (SUCCESS, WARNING, ERROR)
+ * @param {string} path - The path where the console log is coming from
+ * @param {string} text - The message to be displayed
  */
 function log(type, path, text) {
     console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${consoleColors[type]}${text}\u001b[0m`)
