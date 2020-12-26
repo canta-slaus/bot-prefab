@@ -1,7 +1,12 @@
 const fs = require('fs').promises;
 const path = require('path');
-const { log } = require('./utils')
+const { log } = require('./utils.js')
 
+/**
+ * 
+ * @param {import('../typings.d').myClient} client 
+ * @param  {...string} dirs 
+ */
 async function registerCommands(client, ...dirs) {
     for (const dir of dirs) {
         let files = await fs.readdir(path.join(__dirname, dir));
@@ -14,6 +19,9 @@ async function registerCommands(client, ...dirs) {
                 // Check if file is a .js file.
                 if(file.endsWith(".js")) {
                     try {
+                        /**
+                         * @type {import('../typings.d').Command}
+                         */
                         let cmdModule = require(path.join(__dirname, dir, file));
                         let { name, aliases, category, execute } = cmdModule;
 
@@ -63,22 +71,29 @@ async function registerCommands(client, ...dirs) {
     }
 }
 
-async function registerEvents(client, dir) {
-    let files = await fs.readdir(path.join(__dirname, dir));
-    // Loop through each file.
-    for(let file of files) {
-        let stat = await fs.lstat(path.join(__dirname, dir, file));
-        if(stat.isDirectory()) // If file is a directory, recursive call recurDir
-            registerEvents(client, path.join(dir, file));
-        else {
-            // Check if file is a .js file.
-            if(file.endsWith(".js")) {
-                let eventName = file.substring(0, file.indexOf(".js"));
-                try {
-                    let eventModule = require(path.join(__dirname, dir, file));
-                    client.on(eventName, eventModule.bind(null, client));
-                } catch(e) {
-                    log("ERROR", "src/registry.js", `Error loading events: ${e.message}`)
+/**
+ * 
+ * @param {import('../typings.d').myClient} client 
+ * @param {...string} dirs
+ */
+async function registerEvents(client, ...dirs) {
+    for (const dir of dirs) {
+        let files = await fs.readdir(path.join(__dirname, dir));
+        // Loop through each file.
+        for(let file of files) {
+            let stat = await fs.lstat(path.join(__dirname, dir, file));
+            if(stat.isDirectory()) // If file is a directory, recursive call recurDir
+                registerEvents(client, path.join(dir, file));
+            else {
+                // Check if file is a .js file.
+                if(file.endsWith(".js")) {
+                    let eventName = file.substring(0, file.indexOf(".js"));
+                    try {
+                        let eventModule = require(path.join(__dirname, dir, file));
+                        client.on(eventName, eventModule.bind(null, client));
+                    } catch(e) {
+                        log("ERROR", "src/registry.js", `Error loading events: ${e.message}`)
+                    }
                 }
             }
         }
