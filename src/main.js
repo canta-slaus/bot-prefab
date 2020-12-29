@@ -33,7 +33,7 @@ const client = new discord.Client({ ws: { intents: discord.Intents.ALL } });
             useFindAndModify: false
         });
 
-        const blacklistFetch = await client.DBConfig.findByIdAndUpdate('blacklist', { }, { new: true, upsert: true, setDefaultsOnInsert: true });
+        const blacklistFetch = await client.DBConfig.findByIdAndUpdate('blacklist', { }, { new: true, upsert: true, setDefaultsOnInsert: true }).then(doc => { return JSON.parse(JSON.stringify(doc)) });
         client.blacklistCache = new Set(blacklistFetch.blacklisted);
         
         log("SUCCESS", "src/main.js", "Connected to the database.")
