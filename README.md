@@ -9,13 +9,15 @@ The _help_ command is already set up to send a help message for other commands.
 ## Available Features
 - Per server prefixes
 - Per server command disabling/enabling and customizable per server command permissions
+- Per server custom command aliases
+- Per server custom command cooldowns for certain roles
 - Global blacklisting/whitelisting of users
 - Pagination function and more quality of life features
 
 ## How to use this?
 ### First steps
-First of all, either clone the repo by downloading the zip or using GIT. Then run `npm init` and `npm i`, though this prefab only requires discord.js only so far.
-Then, go to [`config/config.json`](config/config.json) and add your bot token, the default prefix to use and your MongoDB URI. Now you can simply start the bot using either node (`node .`) or nodemon (`nodemon .`).\
+First of all, either clone the repo by downloading the zip or using GIT. Then run `npm init` and `npm i`, though this prefab only requires discord.js and a few additional packages only so far.
+Then, go to [`config/config.json`](config/config.json) and add your bot token, the default prefix to use and your MongoDB URI, as well as other information. Now you can simply start the bot using either node (`node .`) or nodemon (`nodemon .`).\
 Personally, I suggest using nodemon.
 
 ### How to add new commands

@@ -1,3 +1,10 @@
+# 29/12/2020
+- Added `alias` command:
+    - A feature to allow server owners to add custom aliases for any command
+    - Added `commandAlias` to the guild schema and to the guildInfo type
+    - Updated the help command to recognize aliases and updated the message event
+- Fixed missing text in `setlanguage` command when invalid language was provided
+
 # 26/12/2020
 - Added `setlanguage` command:
     - A feature to allow any user to chose their own language to be used for the help commands
