@@ -1,7 +1,7 @@
 const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
 const { msToTime } = require('../utils/utils.js');
 const languages = require('../../config/languages.json');
-const { MessageEmbed, Message } = require("discord.js");
+const { MessageEmbed, Message, Collection } = require("discord.js");
 
 const replacePrefix = (string, guildPrefix) => {
     return string.replace(/PREFIX/g, guildPrefix);
@@ -34,7 +34,8 @@ module.exports = {
         }
 
         const queryName = args.join(' ').toLowerCase()
-        const command = client.commands.get(queryName) || client.commands.find(c => c.aliases && c.aliases.includes(queryName));
+        const command = client.commands.get(queryName) || (guildInfo.commandAlias ? client.commands.get(guildInfo.commandAlias[queryName]) : false)
+
         const category = client.categories.get(queryName)
 
         if (command) {
@@ -49,7 +50,11 @@ module.exports = {
 
             if (languages[language][command.name].usage) hEmbed.addField("Usage", replacePrefix(languages[language][command.name].usage, guildPrefix))
 
-            if (command.aliases && command.aliases.length !== 0) hEmbed.addField("Aliases", '`' + command.aliases.join('`, `') + '`')
+            let customAliases = getCommandAliases(client, message.guild.id, command.name)
+            let aliases = [ ]
+            if (command.aliases && command.aliases.length !== 0) aliases = aliases.concat(command.aliases)
+            if (customAliases && customAliases.length !== 0) aliases = aliases.concat(customAliases)
+            if (aliases.length > 0) hEmbed.addField('Aliases', '`' + aliases.join('`, `') + '`')
 
             if (languages[language][command.name].examples) hEmbed.addField("Examples", replacePrefix(languages[language][command.name].examples, guildPrefix))
 
@@ -93,4 +98,26 @@ function defaultHelp(client, message, guildPrefix) {
     .addField('Categories', client.categories.map(c => '> ' + c[0]).join('\n\n'))
 
     message.channel.send(hEmbed);
+}
+
+/**
+ * Function to get all aliases for a command
+ * @param {import('../typings.d').myClient} client
+ * @param {string} guildId 
+ * @param {string} commandName - The command name
+ * @return {string[]} All aliases in an array
+ */
+function getCommandAliases(client, guildId, commandName) {
+    let guildInfo = client.guildInfoCache.get(guildId)
+    let commandAlias = guildInfo.commandAlias ? Object.entries(guildInfo.commandAlias) : [  ]
+
+    let commands = new Collection();
+    for ([alias, command] of commandAlias) {
+        let aliases = commands.get(command)
+        if (!aliases || aliases.length === 0) aliases = [alias]
+        else aliases.push(alias)
+
+        commands.set(command, aliases)
+    }
+    return commands.get(commandName)
 }

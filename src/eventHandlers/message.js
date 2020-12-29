@@ -30,7 +30,7 @@ module.exports = async (client, message) => {
         
         if (message.mentions.has(client.user) && !cmdName) return message.channel.send(`My prefix is \`${guildInfo.prefix}\` or ${client.user}\nTo view a list of my commands, type either \`${guildInfo.prefix}help\` or \`@${client.user.tag} help\``)
         
-        const command = await client.commands.get(cmdName)
+        const command = client.commands.get(cmdName) || (guildInfo.commandAlias ? client.commands.get(guildInfo.commandAlias[cmdName]) : false)
 
         if (!command) return;
 
