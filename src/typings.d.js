@@ -8,6 +8,7 @@ const { Model } = require('mongoose')
  * @property {string[]} [disabledCommands] - Array with all disabled command names
  * @property {Object.<string, PermissionResolvable>} [commandPerms] - Contains all the custom command permissions for a command
  * @property {Object.<string, Object.<string, number>>} [commandCooldowns] - Contains all custom role cooldowns for a command
+ * @property {Object.<string, string>} [commandAlias] - Contains all custom command aliases: { alias: commandName }
  */
 
 /**

@@ -9,7 +9,8 @@ const guildSchema = Schema({
     },
     disabledCommands: Array,
     commandPerms: {},
-    commandCooldowns: {}
+    commandCooldowns: {},
+    commandAlias: {}
 });
 
 module.exports = model('guildSchema', guildSchema);
