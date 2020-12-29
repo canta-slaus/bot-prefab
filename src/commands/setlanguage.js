@@ -22,7 +22,7 @@ module.exports = {
             message.channel.send(`${message.author.tag}, your current set language is \`${userInfo.language}\`.\nThese are the supported languages:\n\`${langs.join('`, `')}\``)
         } else {
             args[0] = args[0].toLowerCase()
-            if (!langs.includes(args[0])) return message.channel.send(`${message.author.tag}`)
+            if (!langs.includes(args[0])) return message.channel.send(`${message.author.tag}, the language \`${args[0]}\` doesn't exist.`)
 
             userInfo.language = args[0]
             message.channel.send(`${message.author.tag}, your language has been changed to \`${args[0]}\``)
