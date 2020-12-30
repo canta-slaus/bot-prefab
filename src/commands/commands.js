@@ -1,5 +1,4 @@
-const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
-const { MessageEmbed } = require('discord.js')
+const { CustomEmbed } = require('../utils/utils')
 
 /**
  * @type {import('../typings.d').Command}
@@ -17,8 +16,7 @@ module.exports = {
         let disabledCommands = guildInfo.disabledCommands;
 
         if (!args[0]) {
-            const embed = new MessageEmbed()
-            .setColor(EMBED_COLOR)
+            const embed = new CustomEmbed({ client: client, userID: message.author.id })
             .setTimestamp()
             .setTitle('Disabled Commands')
             .setDescription(disabledCommands.length === 0 ? 'There are no disabled commands in this server!' : '\`' + disabledCommands.join('\`, \`') + '\`')

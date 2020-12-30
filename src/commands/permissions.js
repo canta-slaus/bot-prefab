@@ -1,6 +1,4 @@
-const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
-const { MessageEmbed } = require('discord.js');
-const { getReply } = require('../utils/utils');
+const { getReply, CustomEmbed } = require('../utils/utils');
 
 const permissions = {
     'a': 'CREATE_INSTANT_INVITE',
@@ -62,8 +60,7 @@ module.exports = {
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let commandPerms = guildInfo.commandPerms;
 
-        const embed = new MessageEmbed()
-        .setColor(EMBED_COLOR)
+        const embed = new CustomEmbed({ client: client, userID: message.author.id })
         .setTimestamp()
         .setTitle(`Command permissions for: ${command.name}`)
         .setFooter('React with 🔁 to override the permissions.')
