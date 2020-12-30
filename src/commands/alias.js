@@ -14,7 +14,7 @@ module.exports = {
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let commandAlias = guildInfo.commandAlias ? Object.entries(guildInfo.commandAlias) : [  ]
         let commands = new Collection();
-        const embed = new CustomEmbed({ data: client, userID: message.author.id })
+        const embed = new CustomEmbed({ client: client, userID: message.author.id })
         .setTitle('Custom command aliases')
 
         if (!args[0]) {
