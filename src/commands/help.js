@@ -1,7 +1,6 @@
-const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
-const { msToTime } = require('../utils/utils.js');
+const { msToTime, CustomEmbed } = require('../utils/utils.js');
 const languages = require('../../config/languages.json');
-const { MessageEmbed, Message, Collection } = require("discord.js");
+const { Message, Collection } = require("discord.js");
 
 const replacePrefix = (string, guildPrefix) => {
     return string.replace(/PREFIX/g, guildPrefix);
@@ -23,14 +22,15 @@ module.exports = {
         let userInfo = client.userInfoCache.get(message.author.id) 
         if (!userInfo) {
             userInfo = await client.DBUser.findById(message.author.id)
-            if (!userInfo) userInfo = { language: 'english' }
+            if (!userInfo) userInfo = { language: 'english', embedColor: 'default' }
             client.userInfoCache.set(message.author.id, userInfo)
         }
 
         let language = userInfo.language
+        let languageHelp = languages[language].help.names
 
         if (!args.length) {
-            return defaultHelp(client, message, guildPrefix);
+            return defaultHelp(client, message, guildPrefix, languageHelp);
         }
 
         const queryName = args.join(' ').toLowerCase()
@@ -38,47 +38,47 @@ module.exports = {
 
         const category = client.categories.get(queryName)
 
+        let hEmbed = new CustomEmbed({ client: client, userID: message.author.id })
+
         if (command) {
-            
-            let hEmbed = new MessageEmbed()
+            let commandHelp = languages[language][command.name]
+            hEmbed
             .setTitle(`${command.name}`)
-            .setAuthor(command.category ? command.category : 'No category')
-            .setColor(EMBED_COLOR)
+            .setAuthor(command.category ? command.category : languageHelp.noCategory)
             .setTimestamp();
             
-            if (languages[language][command.name].description) hEmbed.setDescription(replacePrefix(languages[language][command.name].description, guildPrefix))
+            if (commandHelp.description) hEmbed.setDescription(replacePrefix(commandHelp.description, guildPrefix))
 
-            if (languages[language][command.name].usage) hEmbed.addField("Usage", replacePrefix(languages[language][command.name].usage, guildPrefix))
+            if (commandHelp.usage) hEmbed.addField(languageHelp.usage, replacePrefix(commandHelp.usage, guildPrefix))
 
             let customAliases = getCommandAliases(client, message.guild.id, command.name)
             let aliases = [ ]
             if (command.aliases && command.aliases.length !== 0) aliases = aliases.concat(command.aliases)
             if (customAliases && customAliases.length !== 0) aliases = aliases.concat(customAliases)
-            if (aliases.length > 0) hEmbed.addField('Aliases', '`' + aliases.join('`, `') + '`')
+            if (aliases.length > 0) hEmbed.addField(languageHelp.aliases, '`' + aliases.join('`, `') + '`')
 
-            if (languages[language][command.name].examples) hEmbed.addField("Examples", replacePrefix(languages[language][command.name].examples, guildPrefix))
+            if (commandHelp.examples) hEmbed.addField(languageHelp.examples, replacePrefix(commandHelp.examples, guildPrefix))
 
             let cd;
-            if (command.cooldown) cd = command.cooldown
+            if (command.cooldown) cd = command.cooldown * 1000
             if (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name]) {
                 let roles = Object.keys(guildInfo.commandCooldowns[command.name])
                 let highestRole = message.member.roles.cache.filter(role => roles.includes(role.id)).sort((a, b) =>  b.position - a.position).first()
                 if (highestRole) cd = guildInfo.commandCooldowns[command.name][highestRole.id]
             }
-            if (cd) hEmbed.addField("Cooldown", `${msToTime(cd * 1000)}`)
+            if (cd) hEmbed.addField(languageHelp.cooldown, `${msToTime(cd)}`)
 
-            if (client.guildInfoCache.get(message.guild.id).disabledCommands.includes(command.name)) hEmbed.setAuthor('This command is currently disabled in this server.')
+            if (client.guildInfoCache.get(message.guild.id).disabledCommands.includes(command.name)) hEmbed.setAuthor(languageHelp.isDisabled)
             
             message.channel.send(hEmbed);
         } else if (category) {
-            let hEmbed = new MessageEmbed()
+            hEmbed
             .setTitle(category[0])
-            .setColor(EMBED_COLOR)
             .setTimestamp()
             .setDescription('`' + category.slice(1).join('`, `') + '`')
 
             message.channel.send(hEmbed)
-        } else defaultHelp(client, message, guildPrefix)
+        } else defaultHelp(client, message, guildPrefix, languageHelp)
     }
 }
 
@@ -87,15 +87,15 @@ module.exports = {
  * @param {import('../typings.d').myClient} client 
  * @param {Message} message 
  * @param {string} guildPrefix 
+ * @param {import('../typings.d').languageHelp} languageHelp
  */
-function defaultHelp(client, message, guildPrefix) {
-    let hEmbed = new MessageEmbed()
-    .setTitle("Command Categories")
-    .setColor(EMBED_COLOR)
-    .setDescription(`Use \`${guildPrefix}help [category]\` to get more info on a category, for example: \`${guildPrefix}help misc\``)
+function defaultHelp(client, message, guildPrefix, languageHelp) {
+    let hEmbed = new CustomEmbed({ client: client, userID: message.author.id })
+    .setTitle(languageHelp.commandCategories)
+    .setDescription(replacePrefix(languageHelp.categoriesHelp, guildPrefix))
     .setTimestamp()
     .setThumbnail(client.user.displayAvatarURL())
-    .addField('Categories', client.categories.map(c => '> ' + c[0]).join('\n\n'))
+    .addField(languageHelp.categoriesName, client.categories.map(c => '> ' + languageHelp.categories[c[0]]).join('\n\n'))
 
     message.channel.send(hEmbed);
 }

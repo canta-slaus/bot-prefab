@@ -11,7 +11,22 @@
         "help": {
             "description": "Get help on commands.",
             "usage": "To get help on a specific command, use `PREFIXhelp [command name]` (without the [ ]).\nFor a full list of all commands, simply use `PREFIXhelp`.",
-            "examples": "`PREFIXhelp ping`"
+            "examples": "`PREFIXhelp ping`",
+            "names": {
+                "usage": "Usage",
+                "aliases": "Aliases",
+                "examples": "Examples",
+                "noCategory": "No category",
+                "cooldown": "Cooldown",
+                "isDisabled": "This command is currently disabled in this server.",
+                "commandCategories": "Command categories",
+                "categoriesHelp": "Use `PREFIXhelp [category]` to get more info on a category, for example: `PREFIXhelp misc`",
+                "categoriesName": "Categories",
+                "categories": {
+                    "Utility": "Utility",
+                    "Misc": "Misc"
+                }
+            }
         },
         "permissions": {
             "description": "Set your own custom permissions that your users need to run this command in your server.",
@@ -28,6 +43,14 @@
         "setlanguage": {
             "description": "Set the language you want to get help on commands with.",
             "usage": "- `PREFIXsetlanguage [new language]` to set a new language\n- `PREFIXsetlanguage` to get a list of available languages."
+        },
+        "alias": {
+            "description": "Set your own custom aliases for any command.",
+            "usage": "- `PREFIXalias` to view all aliases\n- `PREFIXalias set [new alias] [command name]` to add a new alias for a specific command\n- `PREFIXalias remove [alias]` to remove an existing alias"
+        },
+        "setcolor": {
+            "description": "Set your own embed color.",
+            "usage": "- `PREFIXssetcolor` to view your color and all available colors\n- `PREFIXsetcolor [new color]` to set your color"
         }
     }
 }
