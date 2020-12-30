@@ -1,4 +1,5 @@
 const { Message, User, MessageEmbed, GuildMember, PermissionResolvable } = require("discord.js");
+const embedColors = require('../../config/colors.json')
 const reactions = ['◀️', '⏸️', '▶️']
 const consoleColors = {
     "SUCCESS": "\u001b[32m",
@@ -301,7 +302,28 @@ function log(type, path, text) {
     console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${consoleColors[type]}${text}\u001b[0m`)
 }
 
+class CustomEmbed extends MessageEmbed {
+    /**
+     * Custom embed class
+     * @param {object} data
+     * @param {import('../typings.d').myClient} data.client 
+     * @param {string} data.userID - The ID of the user you're constucting this embed for
+     */
+    constructor(data) {
+        super()
+        let userInfo = data.client.userInfoCache.get(data.userID) 
+        if (!userInfo) {
+            data.client.DBUser.findById(data.userID).then(d => userInfo = d)
+            if (!userInfo) userInfo = { language: 'english', embedColor: 'default' }
+            data.client.userInfoCache.set(data.userID, userInfo)
+        }
+
+        this.setColor(embedColors[userInfo.embedColor])
+    }
+}
+
 module.exports = {
     processArguments, blacklist, whitelist, paginate, log,
-    getReply, randomRange, delay, msToTime, missingPermissions
+    getReply, randomRange, delay, msToTime, missingPermissions,
+    CustomEmbed
 }
