@@ -13,8 +13,8 @@ module.exports = {
     execute: async function(client, message, args) {
         let userInfo = client.userInfoCache.get(message.author.id)
         if (!userInfo) {
-            const fetch = await client.DBUser.findByIdAndUpdate(message.author.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true })
-            userInfo = { language: fetch.language }
+            userInfo = await client.DBUser.findByIdAndUpdate(message.author.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true })
+            delete userInfo._id
             client.userInfoCache.set(message.author.id, userInfo)
         }
 

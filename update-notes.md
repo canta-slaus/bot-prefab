@@ -1,3 +1,19 @@
+# 30/12/2020
+- Added [`setcolor`](src/commands/setcolor) command:
+    - A feature to allow any user to chose their own embed color
+    - Added [`config/colors.json`](config/colors.json) to store all available colors
+    - Added `CustomEmbed` class (it extends MessageEmbed but automatically sets the embed color to the user color) in [`src/utils/utils.js`](src/utils/utils.js), simply require it and pass in the client and the user ID that this embed is meant for (You can also add your own stuff to the embed to reduce some code for the embeds)
+    - Added `embedColor` to the [`schemas/userSchema.js`](schemas/userSchema.js) as well to the userInfo type in [`src/typings.d.js`](src/typings.d.js)
+    - Updated every command that sends embeds to use the CustomEmbed class
+- Added more options for commands:
+    - `canNotSetCooldown`: users may not set their own custom cooldowns for this command
+    - `canNotAddAlias`: users may not add their own custom aliases for this command
+    - added both to [`src/utils/prefab.js`](src/utils/prefab.js), as well as in the Command type definition
+    - added the necessary if statements in both commands
+- Further added language support for the help command:
+    - Changed every word/text in the help embeds to be customizable for each language (see [`config/languages.json`](config/languages.json)) for the template
+    - This also includes category names, the help command will still only work with the english category name
+
 # 29/12/2020
 - Added `alias` command:
     - A feature to allow server owners to add custom aliases for any command
