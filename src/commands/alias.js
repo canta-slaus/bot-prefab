@@ -1,5 +1,5 @@
-const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR;
-const { MessageEmbed, Collection } = require('discord.js')
+const { CustomEmbed } = require('../utils/utils')
+const { Collection } = require('discord.js')
 
 /**
  * @type {import('../typings.d').Command}
@@ -14,10 +14,8 @@ module.exports = {
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let commandAlias = guildInfo.commandAlias ? Object.entries(guildInfo.commandAlias) : [  ]
         let commands = new Collection();
-        const embed = new MessageEmbed()
+        const embed = new CustomEmbed({ data: client, userID: message.author.id })
         .setTitle('Custom command aliases')
-        .setTimestamp()
-        .setColor(EMBED_COLOR)
 
         if (!args[0]) {
             if (commandAlias.length === 0) {
@@ -49,7 +47,7 @@ module.exports = {
                         break;
                     }
 
-                    aliasAlreadyExists = client.commands.get(args[0]) || guildInfo.commandAlias ? guildInfo.commandAlias[args[0]] : false
+                    aliasAlreadyExists = client.commands.get(args[0]) || (guildInfo.commandAlias ? guildInfo.commandAlias[args[0]] : false)
                     command = client.commands.get(args[1])
 
                     if (aliasAlreadyExists) {
@@ -60,6 +58,10 @@ module.exports = {
                     if (!command) {
                         embed.setDescription(`${message.author}, the command \`${args[1]}\` doesn't exist.`)
                         break;
+                    }
+
+                    if (!command.canNotAddAlias) {
+                        embed.setDescription(`${message.author}, you can not add aliases to the command \`${args[1]}\`.`)
                     }
 
                     if (!guildInfo.commandAlias) guildInfo.commandAlias = {  }
@@ -86,6 +88,8 @@ module.exports = {
 
                     embed.setDescription(`${message.author}, the alias \`${args[0]}\` has been removed.`)
                     break;
+                default:
+                    embed.setDescription(`${message.author}, please check the usage of the command.`)
             }
             client.guildInfoCache.set(message.guild.id, guildInfo)
         }

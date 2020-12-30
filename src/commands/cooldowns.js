@@ -1,7 +1,5 @@
-const EMBED_COLOR = require('../../config/config.json').EMBED_COLOR
-const { MessageEmbed } = require('discord.js')
 const ms = require('ms')
-const { msToTime } = require('../utils/utils')
+const { msToTime, CustomEmbed } = require('../utils/utils')
 
 /**
  * @type {import('../typings.d').Command}
@@ -16,12 +14,12 @@ module.exports = {
     execute: async function(client, message, args) {
         const command = client.commands.get(args[0])
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`)
+        if (command.canNotSetCooldown) return message.channel.send(`${message.author.username}, you can not set a cooldown for this command.`)
 
         let guildInfo = client.guildInfoCache.get(message.guild.id);
         let commandCooldowns = guildInfo.commandCooldowns || {};
         
-        const embed = new MessageEmbed()
-        .setColor(EMBED_COLOR)
+        const embed = new CustomEmbed({ client: client, userID: message.author.id })
         .setTimestamp()
 
         if (!args[1]) {

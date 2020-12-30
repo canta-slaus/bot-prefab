@@ -15,6 +15,22 @@ const { Model } = require('mongoose')
  * @typedef userInfo
  * @type {object}
  * @property {string} language - The users language for the command helps
+ * @property {string} embedColor - The users embed color
+ */
+
+/**
+ * @typedef languageHelp
+ * @type {object}
+ * @property {string} usage 
+ * @property {string} aliases
+ * @property {string} examples
+ * @property {string} noCategory
+ * @property {string} cooldown
+ * @property {string} isDisabled
+ * @property {string} commandCategories
+ * @property {string} categoriesHelp
+ * @property {string} categoriesName
+ * @property {Object.<string, string>} categories
  */
 
 /**
@@ -98,6 +114,8 @@ class myClient extends Client {
  * @property {string} [examples=''] - Examples to further explain the usage of the command
  * @property {number} [cooldown=0] - Cooldown of the command
  * @property {boolean} [canNotDisable=false] - Whether or not this command can be disabled in a server
+ * @property {boolean} [canNotSetCooldown=false] - Whether or not users can set a custom command cooldown for this command
+ * @property {boolean} [canNotAddAlias=false] - Wheter or not users can add custom aliases for this command
  * @property {PermissionResolvable} [perms=[]] - Permissions that the user needs in order to use this command
  * @property {PermissionResolvable} [clientPerms=[]] - Permissions that the client needs to run this command
  * @property {boolean} [devOnly=false] - Whether or not this command can only be used by a developer

@@ -10,6 +10,8 @@ module.exports = {
     examples: "",
     cooldown: 0,
     canNotDisable: false,
+    canNotSetCooldown: false,
+    canNotAddAlias: false,
     perms: [],
     clientPerms: [],
     devOnly: false,
@@ -55,6 +57,16 @@ Attributes:
         - whether the command can be disabled in the server
         - default: false
       [ - set it to 'true', if you don't want this command to be disabled ]
+
+    > canNotSetCooldown [Boolean, optional]
+        - whether the users can set a custom cooldown for this command
+        - default: false
+      [ - set it to 'true', if you don't want this command to have custom cooldowns ]
+
+    - canNotAddAlias [Boolean, optional]
+        - whether the users can add alias for this command
+        - default: false
+      [ - set it to 'true', if you don't want this command to have custo aliases ]
 
     > perms [Array of Strings, optional]
         - the perms the user needs to use this command
