@@ -85,7 +85,7 @@ function processArguments(message, msgArgs, expectedArgs) {
                     if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
                     role = message.guild.roles.cache.get(msgArgs[counter])
                     if (!role) {
-                        if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                        if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
                         member = message.guild.member(msgArgs[counter])
                         if (!member) return msgArgs = { invalid: true, prompt: argument.prompt }
                         else msgArgs[counter] = member
@@ -102,7 +102,7 @@ function processArguments(message, msgArgs, expectedArgs) {
                     if (!msgArgs[counter]) {
                         return msgArgs = { invalid: true, prompt: argument.prompt }
                     }
-                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[coutner].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
+                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
                     member = message.guild.member(msgArgs[counter])
                     if (!member) {
                         return msgArgs = { invalid: true, prompt: argument.prompt }
