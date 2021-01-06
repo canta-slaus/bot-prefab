@@ -1,6 +1,6 @@
 const { Message, User, MessageEmbed, GuildMember, PermissionResolvable } = require("discord.js");
 const embedColors = require('../../config/colors.json')
-const reactions = ['◀️', '⏸️', '▶️']
+const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢']
 const consoleColors = {
     "SUCCESS": "\u001b[32m",
     "WARNING": "\u001b[33m",
@@ -179,26 +179,45 @@ async function paginate(message, embeds, options) {
     if (pageMsg.deleted) return;
 
     const collector = pageMsg.createReactionCollector(filter, { time: time });
-    collector.on('collect', (reaction, user) => {
+    collector.on('collect', async (reaction, user) => {
         reaction.users.remove(user)
-        if (reaction.emoji.name === '▶️') {
-            if (pageIndex < embeds.length-1) {
+        if (reaction.emoji.name === '⏩') {
+            pageIndex = embeds.length - 1
+            await pageMsg.edit({ embed:embeds[pageIndex] })
+        } else if (reaction.emoji.name === '▶️') {
+            if (pageIndex < embeds.length - 1) {
                 pageIndex++
-                pageMsg.edit({ embed: embeds[pageIndex] })
+                await pageMsg.edit({ embed: embeds[pageIndex] })
             } else {
                 pageIndex = 0
-                pageMsg.edit({ embed: embeds[pageIndex] })
+                await pageMsg.edit({ embed: embeds[pageIndex] })
             }
         } else if (reaction.emoji.name === '⏸️') {
-            collector.stop()
+            await pageMsg.delete()
+        } else if (reaction.emoji.name === '⏪') {
+            pageIndex = 0
+            await pageMsg.edit({ embed: embeds[pageIndex] })
         } else if (reaction.emoji.name === '◀️') {
             if (pageIndex > 0) {
                 pageIndex--
-                pageMsg.edit({ embed: embeds[pageIndex] })
+                await pageMsg.edit({ embed: embeds[pageIndex] })
             } else {
-                pageIndex = embeds.length-1
-                pageMsg.edit({ embed: embeds[pageIndex] })
+                pageIndex = embeds.length - 1
+                await pageMsg.edit({ embed: embeds[pageIndex] })
             }
+        } else if (reaction.emoji.name === '🔢') {
+            let num = await getReply(message, { time: 7500, regexp: /^\d+$/ })
+            if (!num) return;
+
+            num = parseInt(num.content)
+
+            if (num > embeds.length) num = embeds.length - 1
+            else num--
+
+            pageIndex = num
+
+            if (pageMsg.deleted) return;
+            await pageMsg.edit({ embed: embeds[pageIndex] })
         }
     });
 
@@ -294,7 +313,7 @@ function missingPermissions(member, perms){
 
 /**
  * Function to shorten down console logs
- * @param {string} type - The type of log (SUCCESS, WARNING, ERROR)
+ * @param {('SUCCESS'|'WARNING'|'ERROR')} type - The type of log (SUCCESS, WARNING, ERROR)
  * @param {string} path - The path where the console log is coming from
  * @param {string} text - The message to be displayed
  */
@@ -307,7 +326,7 @@ class CustomEmbed extends MessageEmbed {
      * Custom embed class
      * @param {object} data
      * @param {import('../typings.d').myClient} data.client 
-     * @param {string} data.userID - The ID of the user you're constucting this embed for
+     * @param {string} data.userID - The ID of the user you're constructing this embed for
      */
     constructor(data) {
         super()
