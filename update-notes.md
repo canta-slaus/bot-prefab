@@ -1,3 +1,35 @@
+# 06/01/2021
+- Added [`channels`](src/commands/channels.js) command:
+    - A command to allow users to disable/enable channels (the bot will ignore commands sent in that channel)
+    - Added `ignoreDisabledChannels` command property that will ignore whether a channel is disabled or not
+    - Added [`channelDelete`](src/eventHandlers/channelDelete.js) event listener to remove a channel from the database if it was disabled
+    - Added `disabledChannels` property to the [guild schema](schemas/guildSchema.js) as well as to the [`typings`](src/typings.d.js) and [`command prefab`](src/utils/prefab.js)
+    - Added the needed if statement to check for disabled channels in the [`message event`](src/eventHandlers/message.js)
+    - Added the description/usage to [`languages`](config/languages.json)
+- Additionally added two new command properties: `hideCommand` and `globalCooldown`
+    - `hideCommand: true` will not display any help about the command and will not show it in any category
+    - Updated the [`help command`](src/commands/help.js) and [`command registration`](src/utils/registry.js)
+    - `globalCooldown: true` the cooldown on this command applies globally for the user
+    (When setting a command to use local cooldowns, it is suggested to have `canNotSetCooldown: true` since otherwise it will get a bit messy for users that share multiple servers with the bot and use commands across them.)
+    - Updated [`message event`](src/eventHandlers/message.js) to check for global/local cooldowns of a command
+    - Added both properties to the [`typings`](src/typings.d.js) and [`command prefab`](src/utils/prefab.js)
+- Updated [`utils`](src/utils/utils.js):
+    - Added three new reactions to `paginate`:
+        - ⏪: to get back to the first page
+        - ⏩: to skip forward to the last page
+        - 🔢: send a number to jump to that page
+    - Updated the ⏸️ reaction:
+        - will now delete the pagination embed
+    - Added types for `log`
+- Fixed typos and other changes:
+    - Documentation typo in [`utils`](src/utils/utils.js) (for the CustomEmbed class)
+    - [`roleDelete`](src/eventHandlers/roleDelete.js): used `message` instead of `role`
+    - [`alias`](src/commands/alias.js): the `if` statement to check whether or not users can add custom aliases was the wrong way around
+    - [`message event`](src/eventHandlers/message.js):
+        - Changed `message.channel.type === 'dm'` to `message.channel.text !== 'text'` and added `message.webhookID` to the first `if` statement
+        - Changed `!message.guild.me.permissions.has(command.clientPerms)` to `!message.channel.permissionsFor(message.guild.me).has(command.clientPerms)` since the bot could have the permissions generally but not in the specific channel
+    - Changed how guild info was cached when a command has been enabled in [`commands`](src/commands/commands.js)
+
 # 30/12/2020
 - Added [`setcolor`](src/commands/setcolor) command:
     - A feature to allow any user to chose their own embed color
