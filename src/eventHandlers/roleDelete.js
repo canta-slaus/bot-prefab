@@ -11,7 +11,7 @@ module.exports = async (client, role) => {
         const fetch = await client.DBGuild.findByIdAndUpdate(role.guild.id, {}, { new: true, upsert: true, setDefaultsOnInsert: true });
         guildInfo = fetch
         delete guildInfo._id
-        client.guildInfoCache.set(message.guild.id, guildInfo)
+        client.guildInfoCache.set(role.guild.id, guildInfo)
     }
 
     let commandCooldowns = guildInfo.commandCooldowns || {}

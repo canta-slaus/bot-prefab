@@ -43,9 +43,7 @@ module.exports = {
                 case 'enable':
                     if (!disabledCommands.includes(command.name)) return message.channel.send(`The command \`${command.name}\` is already enabled.`)
 
-                    await client.DBGuild.findByIdAndUpdate(message.guild.id, {$pull: { disabledCommands: command.name }}, { new: true, upsert: true, setDefaultsOnInsert: true })
-                    let index = guildInfo.disabledCommands.indexOf(command.name)
-                    guildInfo.disabledCommands.splice(index, 1)
+                    guildInfo = await client.DBGuild.findByIdAndUpdate(message.guild.id, {$pull: { disabledCommands: command.name }}, { new: true, upsert: true, setDefaultsOnInsert: true })
                     client.guildInfoCache.set(message.guild.id, guildInfo)
 
                     message.channel.send(`The command \`${command.name}\` has been enabled.`)
