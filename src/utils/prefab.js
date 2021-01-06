@@ -9,9 +9,11 @@ module.exports = {
     usage: "",
     examples: "",
     cooldown: 0,
+    globalCooldown: true,
     canNotDisable: false,
     canNotSetCooldown: false,
     canNotAddAlias: false,
+    hideCommand: false,
     perms: [],
     clientPerms: [],
     devOnly: false,
@@ -53,6 +55,11 @@ Attributes:
         - cooldown of the command
         - default: 0
 
+    > globalCooldown [Boolean, optional]
+        - whether the cooldown on this command will be globally or for a server only
+        - default: true
+      [ -  'true': global cooldown, 'false': server only cooldown ]
+
     > canNotDisable [Boolean, optional]
         - whether the command can be disabled in the server
         - default: false
@@ -66,7 +73,12 @@ Attributes:
     - canNotAddAlias [Boolean, optional]
         - whether the users can add alias for this command
         - default: false
-      [ - set it to 'true', if you don't want this command to have custo aliases ]
+      [ - set it to 'true', if you don't want this command to have custom aliases ]
+
+    - hideCommand [Boolean, optional]
+        - whether or not this command will be displayed in the help command
+        - default: false
+      [ - set it to 'true', if you don't want this command to be displayed in the help command ]
 
     > perms [Array of Strings, optional]
         - the perms the user needs to use this command

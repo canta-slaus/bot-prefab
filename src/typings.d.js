@@ -6,6 +6,7 @@ const { Model } = require('mongoose')
  * @type {object}
  * @property {string} prefix - The prefix for the bot
  * @property {string[]} [disabledCommands] - Array with all disabled command names
+ * @property {string[]} [disabledChannels] - Array with all channel ID's that are disabled
  * @property {Object.<string, PermissionResolvable>} [commandPerms] - Contains all the custom command permissions for a command
  * @property {Object.<string, Object.<string, number>>} [commandCooldowns] - Contains all custom role cooldowns for a command
  * @property {Object.<string, string>} [commandAlias] - Contains all custom command aliases: { alias: commandName }
@@ -113,9 +114,12 @@ class myClient extends Client {
  * @property {string} [usage=''] - Usage information of the command
  * @property {string} [examples=''] - Examples to further explain the usage of the command
  * @property {number} [cooldown=0] - Cooldown of the command
+ * @property {boolean} [globalCooldown=true] - Whether the cooldown on this command will be globally or for a server only
  * @property {boolean} [canNotDisable=false] - Whether or not this command can be disabled in a server
  * @property {boolean} [canNotSetCooldown=false] - Whether or not users can set a custom command cooldown for this command
- * @property {boolean} [canNotAddAlias=false] - Wheter or not users can add custom aliases for this command
+ * @property {boolean} [canNotAddAlias=false] - Whether or not users can add custom aliases for this command
+ * @property {boolean} [hideCommand=false] - Whether or not this command will be displayed in the help command
+ * @property {boolean} [ignoreDisabledChannels=false] - Whether or not this command will still run in ignored channels
  * @property {PermissionResolvable} [perms=[]] - Permissions that the user needs in order to use this command
  * @property {PermissionResolvable} [clientPerms=[]] - Permissions that the client needs to run this command
  * @property {boolean} [devOnly=false] - Whether or not this command can only be used by a developer
