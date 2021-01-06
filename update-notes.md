@@ -6,6 +6,7 @@
     - Added `disabledChannels` property to the [guild schema](schemas/guildSchema.js) as well as to the [`typings`](src/typings.d.js) and [`command prefab`](src/utils/prefab.js)
     - Added the needed if statement to check for disabled channels in the [`message event`](src/eventHandlers/message.js)
     - Added the description/usage to [`languages`](config/languages.json)
+    - Special thanks to Qzxy for providing the idea and most of the code needed <3
 - Additionally added two new command properties: `hideCommand` and `globalCooldown`
     - `hideCommand: true` will not display any help about the command and will not show it in any category
     - Updated the [`help command`](src/commands/help.js) and [`command registration`](src/utils/registry.js)
