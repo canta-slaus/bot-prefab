@@ -1,6 +1,7 @@
 const { processArguments, msToTime, missingPermissions, log } = require("../utils/utils")
 const { Collection, Message } = require("discord.js")
-const cooldowns = new Collection();
+const globalCooldowns = new Collection();
+const serverCooldowns = new Collection();
 const { devs, someServers } = require('../../config/config.json');
 const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -11,7 +12,7 @@ const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  */
 module.exports = async (client, message) => {
     try {
-        if (message.author.bot || message.channel.type === 'dm' || client.blacklistCache.has(message.author.id)) return;
+        if (message.author.bot || message.channel.type !== 'text' || client.blacklistCache.has(message.author.id) || message.webhookID) return;
 
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         if (!guildInfo) {
@@ -39,8 +40,9 @@ module.exports = async (client, message) => {
         if (command.serverOwnerOnly && message.guild.ownerID !== message.author.id) return;
 
         if (guildInfo.disabledCommands.includes(command.name)) return;
+        if (guildInfo.disabledChannels.includes(message.channel.id) && !command.ignoreDisabledChannels) return;
 
-        if (command.clientPerms && !message.guild.me.permissions.has(command.clientPerms)) {
+        if (command.clientPerms && !message.channel.permissionsFor(message.guild.me).has(command.clientPerms)) {
             return message.channel.send(`${message.author.username}, I am missing the following permissions: ${missingPermissions(message.guild.me, command.clientPerms)}`).catch()
         }
 
@@ -57,9 +59,15 @@ module.exports = async (client, message) => {
             if (highestRole) cd = guildInfo.commandCooldowns[command.name][highestRole.id] / 1000
         }
 
+        let cooldowns;
         if (cd) {
-            if (!cooldowns.has(command.name)) {
-                cooldowns.set(command.name, new Collection());
+            if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
+                if (!globalCooldowns.has(command.name)) globalCooldowns.set(command.name, new Collection());
+                cooldowns = globalCooldowns;
+            } else {
+                if (!serverCooldowns.has(message.guild.id)) serverCooldowns.set(message.guild.id, new Collection());
+                cooldowns = serverCooldowns.get(message.guild.id);
+                if (!cooldowns.has(command.name)) cooldowns.set(command.name, new Collection());
             }
 
             const now = Date.now();
@@ -79,6 +87,7 @@ module.exports = async (client, message) => {
             if (msgargs.prompt) return message.channel.send(msgargs.prompt);
             return;
         }
+
         command.execute(client, message, msgargs);
     } catch (e) {
         log("ERROR", "src/eventHandlers/message.js", e.message)
