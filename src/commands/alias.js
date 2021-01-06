@@ -60,7 +60,7 @@ module.exports = {
                         break;
                     }
 
-                    if (!command.canNotAddAlias) {
+                    if (command.canNotAddAlias) {
                         embed.setDescription(`${message.author}, you can not add aliases to the command \`${args[1]}\`.`)
                     }
 
