@@ -51,6 +51,10 @@
         "setcolor": {
             "description": "Set your own embed color.",
             "usage": "- `PREFIXssetcolor` to view your color and all available colors\n- `PREFIXsetcolor [new color]` to set your color"
+        },
+        "channels": {
+            "description": "Check all the channels that will the bot will ignore and disable/enable them.",
+            "usage": "- `PREFIXchannels` to display all currently disabled channels\n- `PREFIXchannels [disable/enable] [channel]` to disable/enable channels."
         }
     }
 }
