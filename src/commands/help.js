@@ -40,7 +40,7 @@ module.exports = {
 
         let hEmbed = new CustomEmbed({ client: client, userID: message.author.id })
 
-        if (command) {
+        if (command && !command.hideCommand) {
             let commandHelp = languages[language][command.name]
             hEmbed
             .setTitle(`${command.name}`)

@@ -23,7 +23,7 @@ async function registerCommands(client, ...dirs) {
                          * @type {import('../typings.d').Command}
                          */
                         let cmdModule = require(path.join(__dirname, dir, file));
-                        let { name, aliases, category, execute } = cmdModule;
+                        let { name, aliases, category, execute, hideCommand } = cmdModule;
 
                         if (!name) {
                             log("WARNING", "src/registry.js", `The command '${path.join(__dirname, dir, file)}' doesn't have a name`);
@@ -42,6 +42,16 @@ async function registerCommands(client, ...dirs) {
 
                         client.commands.set(name, cmdModule);
 
+                        if(aliases && aliases.length !== 0) {
+                            aliases.forEach(alias => {
+                                if (client.commands.has(alias)) {
+                                    log("WARNING", "src/registry.js", `The command alias '${alias}' has already been added.`);
+                                } else client.commands.set(alias, cmdModule);
+                            });
+                        }
+
+                        if (hideCommand) return;
+
                         if (category) {
                             let commands = client.categories.get(category.toLowerCase());
                             if (!commands) commands = [category];
@@ -55,13 +65,6 @@ async function registerCommands(client, ...dirs) {
                             client.categories.set('no category', commands);
                         }
 
-                        if(aliases && aliases.length !== 0) {
-                            aliases.forEach(alias => {
-                                if (client.commands.has(alias)) {
-                                    log("WARNING", "src/registry.js", `The command alias '${alias}' has already been added.`);
-                                } else client.commands.set(alias, cmdModule);
-                            });
-                        }
                     } catch (e) {
                         log("ERROR", "src/registry.js", `Error loading commands: ${e.message}`);
                     }
