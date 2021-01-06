@@ -8,6 +8,7 @@ const guildSchema = Schema({
         type: String
     },
     disabledCommands: Array,
+    disabledChannels: Array,
     commandPerms: {},
     commandCooldowns: {},
     commandAlias: {}
