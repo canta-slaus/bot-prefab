@@ -1,5 +1,5 @@
 import { Command } from "../types";
-import { CustomEmbed } from "../utils/utils";
+import { CustomEmbed, setCooldown } from "../utils/utils";
 
 export default {
     name: "channels",
@@ -31,6 +31,7 @@ export default {
         if (!channel) return message.channel.send(channelEmbed.setDescription(`**The channel ${args[1]} does not exist.**`))
         if (channel.type !== 'text') return message.channel.send(channelEmbed.setDescription(`**You can only disable text channels.**`))
 
+        setCooldown(client, this, message);
         switch (args[0]) {
             case 'disable':
                 if (disabledChannels.includes(channel.id)) return message.channel.send(channelEmbed.setDescription(`**The channel ${channel} is already disabled.**`))

@@ -1,5 +1,6 @@
 import { Command } from "../types";
 import colors from "../../config/colors.json";
+import { setCooldown } from "../utils/utils";
 const cls = Object.keys(colors)
 
 export default {
@@ -9,6 +10,7 @@ export default {
     clientPerms: ['SEND_MESSAGES'],
     
     async execute(client, message, args) {
+        setCooldown(client, this, message);
         let userInfo = client.userInfoCache.get(message.author.id)
         if (!userInfo) {
             userInfo = await client.DBUser.findByIdAndUpdate(message.author.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true })

@@ -1,5 +1,5 @@
 import { Command } from "../types";
-import { CustomEmbed, msToTime } from "../utils/utils";
+import { CustomEmbed, msToTime, setCooldown } from "../utils/utils";
 //@ts-ignore
 import ms from "ms";
 
@@ -22,6 +22,7 @@ export default {
         .setTimestamp()
 
         if (!args[1]) {
+            setCooldown(client, this, message);
             if (!commandCooldowns || !commandCooldowns[command.name]) embed.setDescription('There are no modified cooldowns on this command.')
             else {
                 let desc = ""
@@ -45,6 +46,7 @@ export default {
         //@ts-ignore
         update.commandCooldowns[command.name] = { }
 
+        setCooldown(client, this, message);
         switch (args[1].toLowerCase()) {
             case 'clear':
                 if (commandCooldowns[command.name] && commandCooldowns[command.name][roleID]) {

@@ -1,6 +1,6 @@
 import { MessageReaction, PermissionString, User } from "discord.js";
 import { Command } from "../types";
-import { CustomEmbed, getReply } from "../utils/utils";
+import { CustomEmbed, getReply, setCooldown } from "../utils/utils";
 
 const permissions = {
     'a': 'ADMINISTRATOR',
@@ -71,6 +71,7 @@ export default {
             embed.setDescription('\`' + commandPerms[command.name].join('\`, \`') + '\`')
         }
 
+        setCooldown(client, this, message);
         const msg = await message.channel.send(embed)
         await msg.react('🔁')
 

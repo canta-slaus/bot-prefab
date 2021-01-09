@@ -1,6 +1,6 @@
 import { Command, Client } from "../types";
 import languages from "../../config/languages.json";
-import { msToTime, CustomEmbed } from "../utils/utils";
+import { msToTime, CustomEmbed, setCooldown } from "../utils/utils";
 import { Message, Collection } from "discord.js";
 
 const replacePrefix = (string: string, guildPrefix: string) => {
@@ -14,6 +14,7 @@ export default {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 
     async execute(client, message, args) {
+        setCooldown(client, this, message);
         let guildInfo = client.guildInfoCache.get(message.guild!.id);
         let guildPrefix = guildInfo!.prefix;
 

@@ -1,5 +1,5 @@
 import { Command } from "../types";
-import { CustomEmbed } from "../utils/utils";
+import { CustomEmbed, setCooldown } from "../utils/utils";
 
 export default {
     name: "commands",
@@ -29,6 +29,7 @@ export default {
 
             if (command.canNotDisable) return message.channel.send(`The command \`${command.name}\` can not be disabled/enabled.`);
 
+            setCooldown(client, this, message);
             switch (args[0]) {
                 case "disable":
                     if (disabledCommands!.includes(command.name)) return message.channel.send(`The command \`${command.name}\` is already disabled.`);

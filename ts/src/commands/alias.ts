@@ -1,6 +1,6 @@
 import { Command } from "../types";
 import { Collection } from "discord.js";
-import { CustomEmbed } from "../utils/utils";
+import { CustomEmbed, setCooldown } from "../utils/utils";
 
 export default {
     name: "alias",
@@ -9,6 +9,7 @@ export default {
     serverOwnerOnly: true,
 
     async execute(client, message, args) {
+        setCooldown(client, this, message);
         let guildInfo = client.guildInfoCache.get(message.guild!.id)
         let commandAlias = guildInfo!.commandAlias ? Object.entries(guildInfo!.commandAlias) : [  ]
         let commands = new Collection<string, [string, string[]]>();
