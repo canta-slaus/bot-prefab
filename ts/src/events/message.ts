@@ -2,21 +2,12 @@ import Discord from "discord.js";
 import { devs, someServers } from "../../config/config.json";
 import { Client } from "../types";
 import {
+    getCooldown,
     log,
     missingPermissions,
     msToTime,
     processArguments,
 } from "../utils/utils";
-
-const globalCooldowns = new Discord.Collection<
-    string,
-    Discord.Collection<string, number>
->();
-
-const serverCooldowns = new Discord.Collection<
-    string,
-    Discord.Collection<string, Discord.Collection<string, number>>
->();
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -72,41 +63,32 @@ export default async (client: Client, message: Discord.Message) => {
             return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member!, command.perms)}`);
         }
 
-        let cd = command.cooldown;
-        if (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name]) {
-            let roles = Object.keys(guildInfo.commandCooldowns[command.name]);
-            let highestRole = message.member!.roles.cache.filter((role) => roles.includes(role.id)).sort((a, b) => b.position - a.position).first();
-            if (highestRole)
-                cd = guildInfo.commandCooldowns[command.name][highestRole.id] / 1000;
-        }
+        const cd = getCooldown(client, command, message);
 
         let cooldowns;
         if (cd) {
-        if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
-            if (!globalCooldowns.has(command.name)) globalCooldowns.set(command.name, new Discord.Collection<string, number>());
-            cooldowns = globalCooldowns;
-        } else {
-            if (!serverCooldowns.has(message.guild!.id)) serverCooldowns.set(message.guild!.id, new Discord.Collection<string, Discord.Collection<string, number>>())
-            cooldowns = serverCooldowns.get(message.guild!.id)
-            if (!cooldowns!.has(command.name)) cooldowns!.set(command.name, new Discord.Collection<string, number>());
-        }
+            if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
+                if (!client.globalCooldowns.has(command.name)) client.globalCooldowns.set(command.name, new Discord.Collection<string, number>());
+                cooldowns = client.globalCooldowns;
+            } else {
+                if (!client.serverCooldowns.has(message.guild!.id)) client.serverCooldowns.set(message.guild!.id, new Discord.Collection<string, Discord.Collection<string, number>>())
+                cooldowns = client.serverCooldowns.get(message.guild!.id)
+                if (!cooldowns!.has(command.name)) cooldowns!.set(command.name, new Discord.Collection<string, number>());
+            }
 
-        const now = Date.now();
-        const timestamps = cooldowns!.get(command.name)!;
-        const cooldownAmount = cd * 1000;
-        if (timestamps.has(message.author.id)) {
-            const expirationTime =
-            timestamps.get(message.author.id)! + cooldownAmount;
-            if (now < expirationTime)
-            return message.channel.send(
-                `${message.author.username}, please wait \`${msToTime(
-                expirationTime - now
-                )}\` before using this command again.`
-            );
-        }
-
-        timestamps.set(message.author.id, now);
-        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+            const now = Date.now();
+            const timestamps = cooldowns!.get(command.name)!;
+            const cooldownAmount = cd * 1000;
+            if (timestamps.has(message.author.id)) {
+                const expirationTime =
+                timestamps.get(message.author.id)! + cooldownAmount;
+                if (now < expirationTime)
+                return message.channel.send(
+                    `${message.author.username}, please wait \`${msToTime(
+                    expirationTime - now
+                    )}\` before using this command again.`
+                );
+            }
         }
 
         if (command.arguments && command.arguments.length !== 0)

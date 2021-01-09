@@ -1,5 +1,5 @@
 import Discord, { MessageEmbed } from "discord.js";
-import { Client, Argument } from "../types";
+import { Client, Argument, Command } from "../types";
 import embedColors from "../../config/colors.json"
 const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢'];
 const consoleColors = {
@@ -354,6 +354,41 @@ class CustomEmbed extends MessageEmbed {
     }
 }
 
+function getCooldown(client: Client, command: Command, message: Discord.Message) {
+    let guildInfo = client.guildInfoCache.get(message.guild!.id);
+    let cd = command.cooldown;
+    if (guildInfo!.commandCooldowns && guildInfo!.commandCooldowns[command.name]) {
+        let roles = Object.keys(guildInfo!.commandCooldowns[command.name]);
+        let highestRole = message.member!.roles.cache.filter(role => roles.includes(role.id)).sort((a, b) =>  b.position - a.position).first();
+        if (highestRole) cd = guildInfo!.commandCooldowns[command.name][highestRole.id] / 1000;
+    }
+
+    return cd;
+}
+
+function setCooldown(client: Client, command: Command, message: Discord.Message) {
+    const cd = getCooldown(client, command, message);
+
+    if (!cd) return;
+
+    let cooldowns;
+    if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
+        if (!client.globalCooldowns.has(command.name)) client.globalCooldowns.set(command.name, new Discord.Collection());
+        cooldowns = client.globalCooldowns;
+    } else {
+        if (!client.serverCooldowns.has(message.guild!.id)) client.serverCooldowns.set(message.guild!.id, new Discord.Collection());
+        cooldowns = client.serverCooldowns.get(message.guild!.id);
+        if (!cooldowns!.has(command.name)) cooldowns!.set(command.name, new Discord.Collection());
+    }
+
+    const now = Date.now();
+    const timestamps = cooldowns!.get(command.name);
+    const cooldownAmount = cd * 1000;
+
+    timestamps!.set(message.author.id, now);
+    setTimeout(() => timestamps!.delete(message.author.id), cooldownAmount);
+}
+
 export {
     processArguments,
     blacklist,
@@ -365,5 +400,7 @@ export {
     delay,
     msToTime,
     missingPermissions,
-    CustomEmbed
+    CustomEmbed,
+    getCooldown,
+    setCooldown
 };

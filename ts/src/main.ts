@@ -22,6 +22,9 @@ const client = new Discord.Client({
     //@ts-ignore
     client.DBUser = (await import("../schemas/userSchema")).default;
 
+    client.serverCooldowns = new Discord.Collection();
+    client.globalCooldowns = new Discord.Collection();
+
     await registerEvents(client, "../events");
     await registerCommands(client, "../commands");
 

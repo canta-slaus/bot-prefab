@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { Snowflake } from "discord.js";
 import { Document, Model } from "mongoose";
 
 export declare class Client extends Discord.Client {
@@ -25,6 +25,12 @@ export declare class Client extends Discord.Client {
 
     /** A reference to the guildSchema */
     public DBUser: Model<UserInfo>;
+
+    /** A collection containing all stored server cooldowns */
+    public serverCooldowns: Discord.Collection<Snowflake, Discord.Collection<string, Discord.Collection<Snowflake, number>>>;
+
+    /** A collection containing all stored global cooldowns */
+    public globalCooldowns: Discord.Collection<string, Discord.Collection<Snowflake, number>>;
 }
 
 export interface Command {
