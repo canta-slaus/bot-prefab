@@ -16,6 +16,9 @@ const client = new discord.Client({ ws: { intents: discord.Intents.ALL } });
     client.DBConfig = require('../schemas/config');
     client.DBUser = require('../schemas/userSchema');
 
+    client.serverCooldowns = new discord.Collection();
+    client.globalCooldowns = new discord.Collection();
+
     await registerEvents(client, '../eventHandlers');
     await registerCommands(client, '../commands');
 

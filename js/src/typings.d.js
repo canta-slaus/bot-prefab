@@ -87,16 +87,20 @@ class myClient extends Client {
          * @type {Model<>}
          */
         this.DBConfig;
+
+        /**
+         * A collection containing all stored server cooldowns
+         * @type {Collection<Snowflake, Collection<string, Collection<Snowflake, number>>>}
+         */
+        this.serverCooldowns;
+
+        /**
+         * A collection containing all stored global cooldowns
+         * @type {Collection<string, Collection<Snowflake, number>>}
+         */
+        this.globalCooldowns;
     }
 }
-
-/**
- * @typedef argument
- * @type {object}
- * @property {('NUMBER'|'INTEGER'|'CHANNEL'|'ROLE'|'AUTHOR_OR_MEMBER'|'ROLE_OR_MEMBER'|'SOMETHING'|'MEMBER'|'IMAGE')} type
- * @property {number} [amount=0]
- * @property {(string|MessageEmbed)} [prompt]
- */
 
 /**
  * @callback ExecuteFunction
@@ -126,7 +130,7 @@ class myClient extends Client {
  * @property {boolean} [devOnly=false] - Whether or not this command can only be used by a developer
  * @property {boolean} [someServersOnly=false] - Whether or not this command can only be used in specific servers
  * @property {boolean} [serverOwnerOnly=false] - Whether or not this command can only be used by the server owner
- * @property {argument[]} [arguments=[]] - Arguments that the user should provide
+ * @property {Arguments} [arguments=[]] - Arguments that the user should provide
  * @property {ExecuteFunction} execute - The function that will be ran when someone successfully uses a command
  */
 

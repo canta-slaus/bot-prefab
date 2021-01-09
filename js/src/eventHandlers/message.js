@@ -1,7 +1,5 @@
-const { processArguments, msToTime, missingPermissions, log } = require("../utils/utils")
+const { processArguments, msToTime, missingPermissions, log, getCooldown } = require("../utils/utils")
 const { Collection, Message } = require("discord.js")
-const globalCooldowns = new Collection();
-const serverCooldowns = new Collection();
 const { devs, someServers } = require('../../config/config.json');
 const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -51,21 +49,16 @@ module.exports = async (client, message) => {
             return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, command.perms)}`)
         }
 
-        let cd = command.cooldown
-        if (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name]) {
-            let roles = Object.keys(guildInfo.commandCooldowns[command.name])
-            let highestRole = message.member.roles.cache.filter(role => roles.includes(role.id)).sort((a, b) =>  b.position - a.position).first()
-            if (highestRole) cd = guildInfo.commandCooldowns[command.name][highestRole.id] / 1000
-        }
+        const cd = getCooldown(client, command, message);
 
         let cooldowns;
         if (cd) {
             if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
-                if (!globalCooldowns.has(command.name)) globalCooldowns.set(command.name, new Collection());
-                cooldowns = globalCooldowns;
+                if (!client.globalCooldowns.has(command.name)) client.globalCooldowns.set(command.name, new Collection());
+                cooldowns = client.globalCooldowns;
             } else {
-                if (!serverCooldowns.has(message.guild.id)) serverCooldowns.set(message.guild.id, new Collection());
-                cooldowns = serverCooldowns.get(message.guild.id);
+                if (!client.serverCooldowns.has(message.guild.id)) client.serverCooldowns.set(message.guild.id, new Collection());
+                cooldowns = client.serverCooldowns.get(message.guild.id);
                 if (!cooldowns.has(command.name)) cooldowns.set(command.name, new Collection());
             }
 
@@ -76,9 +69,6 @@ module.exports = async (client, message) => {
                 const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
                 if (now < expirationTime) return message.channel.send(`${message.author.username}, please wait \`${msToTime(expirationTime - now)}\` before using this command again.`)
             }
-
-            timestamps.set(message.author.id, now);
-            setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
         }
 
         if (command.arguments && command.arguments.length !== 0) msgargs = processArguments(message, msgargs, command.arguments)
