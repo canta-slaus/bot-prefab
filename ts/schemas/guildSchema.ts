@@ -8,8 +8,10 @@ const guildSchema = new Schema({
     type: String,
   },
   disabledCommands: Array,
+  disabledChannels: Array,
   commandPerms: {},
   commandCooldowns: {},
+  commandAlias: {}
 });
 
 export default model("guildSchema", guildSchema);

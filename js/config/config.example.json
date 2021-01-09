@@ -1,0 +1,7 @@
+{
+    "TOKEN": "YOUR_DISCORD_BOT_TOKEN_HERE",
+    "PREFIX": "!",
+    "MONGODB_URI": "YOUR_MONGODB_URI_HERE",
+    "devs": [],
+    "someServers": []
+}

@@ -2,7 +2,7 @@
   "name": "bot-prefab",
   "version": "1.0.0",
   "description": "Small and simple template to make bots using Discord.js.",
-  "main": "./src/index.ts",
+  "main": "./src/main.ts",
   "keywords": [],
   "author": "https://github.com/canta-slaus/bot-prefab",
   "license": "ISC",
@@ -10,9 +10,5 @@
     "discord.js": "^12.4.0",
     "mongoose": "^5.10.14",
     "ms": "^2.1.3"
-  },
-  "devDependencies": {
-    "@types/mongoose": "^5.10.3",
-    "@types/ms": "^0.7.31"
   }
 }

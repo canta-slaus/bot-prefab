@@ -118,7 +118,7 @@ function processArguments(message, msgArgs, expectedArgs) {
                     break;
 
                 default:
-                    return log("WARNING", "src/utils/utils.js", `processArguments: the argument type '${argument.type}' doesn't exist`);
+                    log("WARNING", "src/utils/utils.js", `processArguments: the argument type '${argument.type}' doesn't exist`);
             }
             counter++
         }
@@ -293,7 +293,7 @@ function msToTime(ms) {
     day = Math.floor(hour / 24);
     hour = hour % 24;
     return day ? (hour ? (`${day}d ${hour}h ${minute}m ${seconds}s`) : (minute ? (`${day}d ${minute}m ${seconds}s`) : (`${day}d ${seconds}s`))) :
-                 (hour ? (` ${hour}h ${minute}m ${seconds}s`) : (minute ? (`${minute}m ${seconds}s`) : (`${seconds}s`)))
+                 (hour ? (`${hour}h ${minute}m ${seconds}s`) : (minute ? (`${minute}m ${seconds}s`) : (`${seconds}s`)))
 }
 
 /**

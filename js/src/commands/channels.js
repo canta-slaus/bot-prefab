@@ -11,7 +11,7 @@ module.exports = {
     ignoreDisabledChannels: true,
     serverOwnerOnly: true,
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
-    
+
     execute: async function(client, message, args) {
         let guildInfo = client.guildInfoCache.get(message.guild.id);
         let disabledChannels = guildInfo.disabledChannels;
@@ -44,7 +44,7 @@ module.exports = {
                 message.channel.send(channelEmbed.setDescription(`**The channel ${channel} has been disabled.**`))
                 break;
             case 'enable':
-                if (!disabledChannels.includes(channel.id)) return message.channel.send(channelEmbed.setColor(EMBED_COLOR).setDescription(`**The channel ${channel} is already enabled.**`))
+                if (!disabledChannels.includes(channel.id)) return message.channel.send(channelEmbed.setDescription(`**The channel ${channel} is already enabled.**`))
 
                 guildInfo = await client.DBGuild.findByIdAndUpdate(message.guild.id, { $pull: { disabledChannels: channel.id } }, { new: true, upsert: true, setDefaultsOnInsert: true })
                 client.guildInfoCache.set(message.guild.id, guildInfo)

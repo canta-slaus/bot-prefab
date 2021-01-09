@@ -1,7 +1,9 @@
-const { getReply, CustomEmbed } = require('../utils/utils');
+import { MessageReaction, PermissionString, User } from "discord.js";
+import { Command } from "../types";
+import { CustomEmbed, getReply } from "../utils/utils";
 
 const permissions = {
-    'a': 'CREATE_INSTANT_INVITE',
+    'a': 'ADMINISTRATOR',
     'b': 'CREATE_INSTANT_INVITE',
     'c': 'KICK_MEMBERS',
     'd': 'BAN_MEMBERS',
@@ -33,14 +35,11 @@ const permissions = {
     '3': 'MANAGE_ROLES',
     '4': 'MANAGE_WEBHOOKS',
     '5': 'MANAGE_EMOJIS',
-}
+};
 
-const permsRegEx = /^[0-4a-zA-Z]{1,31}$/
+const permsRegEx = /^[0-4a-zA-Z]{1,31}$/;
 
-/**
- * @type {import('../typings.d').Command}
- */
-module.exports = {
+export default {
     name: "permissions",
     category: "Utility",
     aliases: ["p"],
@@ -52,13 +51,13 @@ module.exports = {
         }
     ],
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS', 'ADD_REACTIONS'],
-
-    execute: async function(client, message, args) {
+    
+    async execute(client, message, args) {
         const command = client.commands.get(args[0].toLowerCase())
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`)
 
-        let guildInfo = client.guildInfoCache.get(message.guild.id)
-        let commandPerms = guildInfo.commandPerms;
+        let guildInfo = client.guildInfoCache.get(message.guild!.id)
+        let commandPerms = guildInfo!.commandPerms;
 
         const embed = new CustomEmbed({ client: client, userID: message.author.id })
         .setTimestamp()
@@ -75,7 +74,7 @@ module.exports = {
         const msg = await message.channel.send(embed)
         await msg.react('🔁')
 
-        const filter = (reaction, user) => {
+        const filter = (reaction: MessageReaction, user: User) => {
             return reaction.emoji.name === '🔁' && user.id === message.author.id;
         };
         const collector = msg.createReactionCollector(filter, { time: 30000, max: 1 });
@@ -104,29 +103,33 @@ module.exports = {
 
             const update = {}
             if (perms.content.toLowerCase() === 'clear') {
+                //@ts-ignore
                 update[`commandPerms.${command.name}`] = ""
-                await client.DBGuild.findByIdAndUpdate(message.guild.id, { $unset: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
+                await client.DBGuild.findByIdAndUpdate(message.guild!.id, { $unset: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
 
-                if (guildInfo.commandPerms) {
-                    delete guildInfo['commandPerms'][command.name]
-                    client.guildInfoCache.set(message.guild.id, guildInfo)
+                if (guildInfo!.commandPerms) {
+                    delete guildInfo!['commandPerms'][command.name]
+                    client.guildInfoCache.set(message.guild!.id, guildInfo!)
                 }
             } else {
                 if (!permsRegEx.test(perms.content)) return message.channel.send(`${message.author.username}, sorry, that isn't a valid permission string.`)
 
-                const permsArray = []
+                const permsArray = [] as PermissionString[]
                 for (var i = 0; i < perms.content.length; i++) {
+                    //@ts-ignore
                     if (permsArray.includes(permissions[perms.content[i]])) continue;
+                    //@ts-ignore
                     permsArray.push(permissions[perms.content[i]])
                 }
 
+                //@ts-ignore
                 update[`commandPerms.${command.name}`] = permsArray
-                guildInfo.commandPerms = guildInfo.commandPerms ? guildInfo.commandPerms : {}
-                guildInfo.commandPerms[command.name] = permsArray
-                client.guildInfoCache.set(message.guild.id, guildInfo)
-                await client.DBGuild.findByIdAndUpdate(message.guild.id, { $set: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
+                guildInfo!.commandPerms = guildInfo!.commandPerms ? guildInfo!.commandPerms : {}
+                guildInfo!.commandPerms[command.name] = permsArray
+                client.guildInfoCache.set(message.guild!.id, guildInfo!)
+                await client.DBGuild.findByIdAndUpdate(message.guild!.id, { $set: update }, { new: true, upsert: true, setDefaultsOnInsert: true })
             }
             message.channel.send(`${message.author.username}, the permissions for ${command.name} have been overwritten.`)
         })
     }
-}
+} as Command;

@@ -1,0 +1,60 @@
+{
+    "english": {
+        "commands": {
+            "description": "Check the disabled commands and enable/disable commands.",
+            "usage": "- `PREFIXcommands` to display all currently disabled commands\n- `PREFIXcommands [disable/enable] [command]` to disable/enable commands."
+        },
+        "cooldowns": {
+            "description": "Check the all the custom cooldowns of a command and add new cooldowns.",
+            "usage": "- `PREFIXcooldowns [command]` to display all modified cooldowns for a command and update them.\n- `PREFIXcooldowns [command] set [role] [cooldown]` to set the cooldown for this command to a certain value.- `PREFIXcooldowns [command] clear [role]` to use the default cooldown for this command."
+        },
+        "help": {
+            "description": "Get help on commands.",
+            "usage": "To get help on a specific command, use `PREFIXhelp [command name]` (without the [ ]).\nFor a full list of all commands, simply use `PREFIXhelp`.",
+            "examples": "`PREFIXhelp ping`",
+            "names": {
+                "usage": "Usage",
+                "aliases": "Aliases",
+                "examples": "Examples",
+                "noCategory": "No category",
+                "cooldown": "Cooldown",
+                "isDisabled": "This command is currently disabled in this server.",
+                "commandCategories": "Command categories",
+                "categoriesHelp": "Use `PREFIXhelp [category]` to get more info on a category, for example: `PREFIXhelp misc`",
+                "categoriesName": "Categories",
+                "categories": {
+                    "Utility": "Utility",
+                    "Misc": "Misc"
+                }
+            }
+        },
+        "permissions": {
+            "description": "Set your own custom permissions that your users need to run this command in your server.",
+            "usage": "- `PREFIXpermissions [command]` to display and change the permissions someone needs to use this command."
+        },
+        "ping": {
+            "description": "Get the bots current ping.",
+            "usage": "`PREFIXping`"
+        },
+        "setprefix": {
+            "description": "Set a new prefix for your server.",
+            "usage": "`PREFIXsetprefix [new prefix]`"
+        },
+        "setlanguage": {
+            "description": "Set the language you want to get help on commands with.",
+            "usage": "- `PREFIXsetlanguage [new language]` to set a new language\n- `PREFIXsetlanguage` to get a list of available languages."
+        },
+        "alias": {
+            "description": "Set your own custom aliases for any command.",
+            "usage": "- `PREFIXalias` to view all aliases\n- `PREFIXalias set [new alias] [command name]` to add a new alias for a specific command\n- `PREFIXalias remove [alias]` to remove an existing alias"
+        },
+        "setcolor": {
+            "description": "Set your own embed color.",
+            "usage": "- `PREFIXssetcolor` to view your color and all available colors\n- `PREFIXsetcolor [new color]` to set your color"
+        },
+        "channels": {
+            "description": "Check all the channels that will the bot will ignore and disable/enable them.",
+            "usage": "- `PREFIXchannels` to display all currently disabled channels\n- `PREFIXchannels [disable/enable] [channel]` to disable/enable channels."
+        }
+    }
+}

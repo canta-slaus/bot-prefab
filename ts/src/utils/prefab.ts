@@ -1,21 +1,27 @@
 import { Command } from "../types";
 
 export default {
-  name: "",
-  aliases: [],
-  category: "",
-  usage: "",
-  description: "",
-  examples: "",
-  cooldown: 0,
-  canNotDisable: false,
-  perms: [],
-  clientPerms: [],
-  devOnly: false,
-  someServersOnly: false,
-  serverOwnerOnly: false,
-  arguments: [],
-  async execute(client, message, args) {},
+    name: "",
+    aliases: [],
+    category: "",
+    usage: "",
+    description: "",
+    examples: "",
+    cooldown: 0,
+    globalCooldown: true,
+    canNotDisable: false,
+    canNotSetCooldown: false,
+    canNotAddAlias: false,
+    hideCommand: false,
+    perms: [],
+    clientPerms: [],
+    devOnly: false,
+    someServersOnly: false,
+    serverOwnerOnly: false,
+    arguments: [],
+    async execute(client, message, args) {
+
+    },
 } as Command;
 
 /*
@@ -47,16 +53,36 @@ Attributes:
         - cooldown of the command
         - default: 0
 
+    > globalCooldown [Boolean, optional]
+        - whether the cooldown on this command will be globally or for a server only
+        - default: true
+      [ -  'true': global cooldown, 'false': server only cooldown ]
+
     > canNotDisable [Boolean, optional]
         - whether the command can be disabled in the server
         - default: false
       [ - set it to 'true', if you don't want this command to be disabled ]
 
-    > perms [Array of PermissionFlags, optional]
+    > canNotSetCooldown [Boolean, optional]
+        - whether the users can set a custom cooldown for this command
+        - default: false
+      [ - set it to 'true', if you don't want this command to have custom cooldowns ]
+
+    - canNotAddAlias [Boolean, optional]
+        - whether the users can add alias for this command
+        - default: false
+      [ - set it to 'true', if you don't want this command to have custom aliases ]
+
+    - hideCommand [Boolean, optional]
+        - whether or not this command will be displayed in the help command
+        - default: false
+      [ - set it to 'true', if you don't want this command to be displayed in the help command ]
+
+    > perms [Array of Strings, optional]
         - the perms the user needs to use this command
         - default: no permissions needed to use this 
 
-    > clientPerms [Array of PermissionFlags, optional]
+    > clientPerms [Array of Strings, optional]
         - the perms your bot needs to use this command
         - default: no permissions needed
 
@@ -81,7 +107,7 @@ Attributes:
                 prompt: String
             }
 
-        - ArgumentType: NUMBER, INTEGER, CHANNEL, ROLE, AUTHOR_OR_MEMBER, ROLE_OR_MEMBER, STRING
+        - ArgumentType: The argument type that the user should provide
         - prompt: The message to sent if the command user didn't provide                            [optional, will not send a message and simply return if not set]
         - check out `src/utils/utils.md` for more information
 

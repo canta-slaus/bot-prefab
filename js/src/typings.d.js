@@ -24,6 +24,7 @@ const { Model } = require('mongoose')
  * @type {object}
  * @property {string} usage 
  * @property {string} aliases
+ * @property {string} description
  * @property {string} examples
  * @property {string} noCategory
  * @property {string} cooldown
