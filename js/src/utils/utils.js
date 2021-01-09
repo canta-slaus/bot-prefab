@@ -370,6 +370,7 @@ function setCooldown(client, command, message) {
 
     if (!cd) return;
 
+    let cooldowns;
     if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
         if (!client.globalCooldowns.has(command.name)) client.globalCooldowns.set(command.name, new Collection());
         cooldowns = client.globalCooldowns;

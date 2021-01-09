@@ -46,6 +46,7 @@ module.exports = {
         const update = { commandCooldowns: { } }
         update.commandCooldowns[command.name] = { }
 
+        setCooldown(client, this, message);
         switch (args[1].toLowerCase()) {
             case 'clear':
                 if (commandCooldowns[command.name] && commandCooldowns[command.name][roleID]) {
