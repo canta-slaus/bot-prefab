@@ -1,4 +1,4 @@
-const { CustomEmbed } = require('../utils/utils')
+const { CustomEmbed, setCooldown } = require('../utils/utils')
 
 /**
  * @type {import('../typings.d').Command}
@@ -30,6 +30,7 @@ module.exports = {
 
             if (command.canNotDisable) return message.channel.send(`The command \`${command.name}\` can not be disabled/enabled.`)
 
+            setCooldown(client, this, message);
             switch (args[0]) {
                 case 'disable':
                     if (disabledCommands.includes(command.name)) return message.channel.send(`The command \`${command.name}\` is already disabled.`)

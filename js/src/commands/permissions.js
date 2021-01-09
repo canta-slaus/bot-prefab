@@ -1,4 +1,4 @@
-const { getReply, CustomEmbed } = require('../utils/utils');
+const { getReply, CustomEmbed, setCooldown } = require('../utils/utils');
 
 const permissions = {
     'a': 'ADMINISTRATOR',
@@ -72,6 +72,7 @@ module.exports = {
             embed.setDescription('\`' + commandPerms[command.name].join('\`, \`') + '\`')
         }
 
+        setCooldown(client, this, message);
         const msg = await message.channel.send(embed)
         await msg.react('🔁')
 

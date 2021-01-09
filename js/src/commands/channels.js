@@ -1,4 +1,4 @@
-const { CustomEmbed } = require('../utils/utils')
+const { CustomEmbed, setCooldown } = require('../utils/utils')
 
 /**
  * @type {import('../typings.d').Command}
@@ -33,6 +33,7 @@ module.exports = {
         if (!channel) return message.channel.send(channelEmbed.setDescription(`**The channel ${args[1]} does not exist.**`))
         if (channel.type !== 'text') return message.channel.send(channelEmbed.setDescription(`**You can only disable text channels.**`))
 
+        setCooldown(client, this, message);
         switch (args[0]) {
             case 'disable':
                 if (disabledChannels.includes(channel.id)) return message.channel.send(channelEmbed.setDescription(`**The channel ${channel} is already disabled.**`))

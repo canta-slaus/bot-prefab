@@ -1,5 +1,5 @@
 const ms = require('ms')
-const { msToTime, CustomEmbed } = require('../utils/utils')
+const { msToTime, CustomEmbed, setCooldown } = require('../utils/utils')
 
 /**
  * @type {import('../typings.d').Command}
@@ -23,6 +23,7 @@ module.exports = {
         .setTimestamp()
 
         if (!args[1]) {
+            setCooldown(client, this, message);
             if (!commandCooldowns || !commandCooldowns[command.name]) embed.setDescription('There are no modified cooldowns on this command.')
             else {
                 let desc = ""

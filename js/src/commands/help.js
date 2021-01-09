@@ -1,4 +1,4 @@
-const { msToTime, CustomEmbed } = require('../utils/utils.js');
+const { msToTime, CustomEmbed, setCooldown } = require('../utils/utils.js');
 const languages = require('../../config/languages.json');
 const { Message, Collection } = require("discord.js");
 
@@ -16,6 +16,7 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 
     execute: async function(client, message, args) {
+        setCooldown(client, this, message)
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let guildPrefix = guildInfo.prefix
 

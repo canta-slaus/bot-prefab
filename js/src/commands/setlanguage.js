@@ -1,4 +1,5 @@
 const languages = require('../../config/languages.json')
+const { setCooldown } = require('../utils/utils')
 const langs = Object.keys(languages)
 
 /**
@@ -11,6 +12,7 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES'],
 
     execute: async function(client, message, args) {
+        setCooldown(client, this, message);
         let userInfo = client.userInfoCache.get(message.author.id)
         if (!userInfo) {
             userInfo = await client.DBUser.findByIdAndUpdate(message.author.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true })

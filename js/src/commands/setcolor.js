@@ -1,4 +1,5 @@
 const colors = require('../../config/colors.json')
+const { setCooldown } = require('../utils/utils')
 const cls = Object.keys(colors)
 
 /**
@@ -11,6 +12,7 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES'],
 
     execute: async function(client, message, args) {
+        setCooldown(client, this, message);
         let userInfo = client.userInfoCache.get(message.author.id)
         if (!userInfo) {
             userInfo = await client.DBUser.findByIdAndUpdate(message.author.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true })
