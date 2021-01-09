@@ -1,3 +1,5 @@
+# 10/01/2021
+- Cooldowns are now set when you want them to, e.g. you can first do all the command usage checks and then set the cooldown, so that no cooldown will be set when they don't know how to use the command properly.
 # 09/01/2021
 - The TypeScript version has been added! _Thanks to Cursors for laying the foundation <3_
     - There might be small mistakes here and there, but I haven't come across any when testing out all the commands.
