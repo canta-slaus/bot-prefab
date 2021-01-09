@@ -2,6 +2,11 @@ import Discord, { MessageEmbed } from "discord.js";
 import { Client, Argument } from "../types";
 import embedColors from "../../config/colors.json"
 const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢'];
+const consoleColors = {
+    "SUCCESS": "\u001b[32m",
+    "WARNING": "\u001b[33m",
+    "ERROR": "\u001b[31m"
+}
 
 function processArguments(
     message: Discord.Message,
@@ -331,7 +336,7 @@ function missingPermissions(
 }
 
 function log(type: "SUCCESS"|"ERROR"|"WARNING", path: string, text: string) {
-    console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${type}${text}\u001b[0m`);
+    console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${consoleColors[type]}${text}\u001b[0m`);
 }
 
 class CustomEmbed extends MessageEmbed {
