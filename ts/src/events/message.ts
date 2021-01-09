@@ -25,7 +25,8 @@ export default async (client: Client, message: Discord.Message) => {
         if (
             message.author.bot ||
             message.channel.type === "dm" ||
-            client.blacklistCache.has(message.author.id)
+            client.blacklistCache.has(message.author.id) ||
+            message.webhookID
         ) return;
 
         let guildInfo = client.guildInfoCache.get(message.guild!.id)!;
