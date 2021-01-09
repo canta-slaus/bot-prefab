@@ -1,4 +1,4 @@
-const { Message, User, MessageEmbed, GuildMember, PermissionResolvable } = require("discord.js");
+const { Message, User, MessageEmbed, GuildMember, PermissionResolvable, Guild } = require("discord.js");
 const embedColors = require('../../config/colors.json')
 const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢']
 const consoleColors = {
@@ -341,8 +341,54 @@ class CustomEmbed extends MessageEmbed {
     }
 }
 
+/**
+ * @param {import('../typings.d').myClient} client
+ * @param {import('../typings.d').Command} command - The command you want to set a cooldown for
+ * @param {Message} message - The guild ID the command is executed in
+ * @return {(number|undefined)}
+ */
+function getCooldown(client, command, message) {
+    let guildInfo = client.guildInfoCache.get(message.guild.id);
+    let cd = command.cooldown;
+    if (guildInfo.commandCooldowns && guildInfo.commandCooldowns[command.name]) {
+        let roles = Object.keys(guildInfo.commandCooldowns[command.name]);
+        let highestRole = message.member.roles.cache.filter(role => roles.includes(role.id)).sort((a, b) =>  b.position - a.position).first();
+        if (highestRole) cd = guildInfo.commandCooldowns[command.name][highestRole.id] / 1000;
+    }
+
+    return cd;
+}
+
+/**
+ * 
+ * @param {import('../typings.d').myClient} client 
+ * @param {import('../typings.d').Command} command 
+ * @param {Message} message
+ */
+function setCooldown(client, command, message) {
+    const cd = getCooldown(client, command, message);
+
+    if (!cd) return;
+
+    if (typeof command.globalCooldown === 'undefined' || command.globalCooldown) {
+        if (!client.globalCooldowns.has(command.name)) client.globalCooldowns.set(command.name, new Collection());
+        cooldowns = client.globalCooldowns;
+    } else {
+        if (!client.serverCooldowns.has(message.guild.id)) client.serverCooldowns.set(message.guild.id, new Collection());
+        cooldowns = client.serverCooldowns.get(message.guild.id);
+        if (!cooldowns.has(command.name)) cooldowns.set(command.name, new Collection());
+    }
+
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.name);
+    const cooldownAmount = cd * 1000;
+
+    timestamps.set(message.author.id, now);
+    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+}
+
 module.exports = {
     processArguments, blacklist, whitelist, paginate, log,
     getReply, randomRange, delay, msToTime, missingPermissions,
-    CustomEmbed
+    CustomEmbed, getCooldown, setCooldown
 }
