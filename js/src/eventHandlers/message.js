@@ -14,11 +14,11 @@ module.exports = async (client, message) => {
 
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         if (!guildInfo) {
-            const guildInfo = await client.DBGuild.findByIdAndUpdate(message.guild.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
+            guildInfo = await client.DBGuild.findByIdAndUpdate(message.guild.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
             delete guildInfo._id
             client.guildInfoCache.set(message.guild.id, guildInfo)
         }
-        
+
         const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(guildInfo.prefix)})\\s*`);
         if (!prefixRegex.test(message.content)) return;
 
