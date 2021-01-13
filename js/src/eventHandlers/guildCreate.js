@@ -16,7 +16,7 @@ const getDefaultChannel = (guild) => {
     }
 
     // Check for a "general" channel, which is often default chat
-    channel = guild.channels.cache.find(channel => channel.name === "general" && channel.permissionsFor(guild.client.user).has("SEND_MESSAGES"));
+    channel = guild.channels.cache.find(channel => channel.name === "general" && channel.permissionsFor(guild.client.user).has("SEND_MESSAGES") && channel.type == "text");
     if (channel) return channel;
 
     // Now we get into the heavy stuff: first channel in order where the bot can speak
