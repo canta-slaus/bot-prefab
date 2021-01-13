@@ -1,5 +1,12 @@
-import Discord, { Snowflake } from "discord.js";
+import Discord, { Channel, Snowflake } from "discord.js";
 import { Document, Model } from "mongoose";
+
+export type ExecuteParameters = {
+    client: Client;
+    message: Discord.Message;
+    args: string[];
+    flags: Flags;
+}
 
 export declare class Client extends Discord.Client {
     /** A collection containing all commands */
@@ -89,13 +96,10 @@ export interface Command {
     serverOwnerOnly?: boolean;
 
     /** Arguments that the user should provide */
-    arguments?: Argument[];
+    arguments?: Arguments;
 
     /** The function that will be ran when someone successfully uses a command */
-    execute(
-    client: Client,
-    message: Discord.Message,
-    args: (string)[]): any;
+    execute(p: ExecuteParameters): any;
 }
 
 export interface GuildInfo {
@@ -128,29 +132,159 @@ export interface UserInfo {
     embedColor: string;
 }
 
-export class Argument {
-    public type:
-        | "NUMBER"
-        | "INTEGER"
-        | "CHANNEL"
-        | "ROLE"
-        | "AUTHOR_OR_MEMBER"
-        | "ROLE_OR_MEMBER"
-        | "SOMETHING"
-        | "MEMBER"
-        | "IMAGE";
-    public amount?: number;
-    public prompt?: string;
-    public returnUsers?: boolean;
+export type Arguments = (SomethingArgument|NumberArgument|ChannelArgument
+                        |RoleArgument|AuthorOrMemberArgument|MemberArgument
+                        |AttachmentArgument|TimeArgument)[];
+
+interface SomethingArgument {
+    /** The user argument can be anything, maybe a word or a URL - anything */
+    type: "SOMETHING";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The amount of arguments */
+    amount?: number;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** An array of words that the user can send */
+    words?: string[];
+
+    /** The user argument should match this certain regular expression */
+    regexp?: RegExp;
 }
 
-export type ProcessedArguments =
-    | [
-        | string
-        | number
-        | Discord.Role
-        | Discord.Channel
-        | Discord.GuildMember
-        | Discord.MessageAttachment
-        ]
-    | { invalid: true; prompt?: string };
+interface NumberArgument {
+    /** The user argument has to be a number and will automatically be converted into a number */
+    type: "NUMBER";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The amount of arguments */
+    amount?: number;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** The minimum that the number can be */
+    min?: number;
+
+    /** The maximum that the number can be */
+    max?: number;
+
+    /** Whether the number should be converted into an integer */
+    toInteger?: boolean;
+}
+
+interface ChannelArgument {
+    /** The user argument has to be a channel and will automatically be converted into a channel */
+    type: "CHANNEL";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The amount of arguments */
+    amount?: number;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** The channel types that the provided channel can be */
+    channelTypes?: ("text"|"voice"|"category"|"news"|"store")[];
+}
+
+interface RoleArgument {
+    /** The user argument has to be a role and will automatically converted into a role */
+    type: "ROLE";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The amount of arguments */
+    amount?: number;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** The role shouldn't be the default role of a bot */
+    notBot?: boolean;
+}
+
+interface AuthorOrMemberArgument {
+    /** If the user mentions someone, it will get the mentioned member, otherwise it will be the message member */
+    type: "AUTHOR_OR_MEMBER";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** Whether or not the member should be converted into the User object */
+    toUser?: boolean;
+
+}
+
+interface MemberArgument {
+    /** The user argument has to be a member and will automatically be converted into a member */
+    type: "MEMBER";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The amount of arguments */
+    amount?: number;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** The member shouldn't be a bot */
+    notBot?: boolean;
+
+    /** The member shouldn't be the command user */
+    notSelf?: boolean;
+
+    /** Whether or not the member should be converted into the User object */
+    toUser?: boolean;
+}
+
+interface AttachmentArgument {
+    /** The message has to have an attachment */
+    type: "ATTACHMENT";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** The accepted attachment types */
+    attachmentTypes: string[];
+}
+
+interface TimeArgument {
+    /** The user argument has to be time and will automatically be converted into milliseconds */
+    type: "TIME";
+
+    /** The ID of this argument */
+    id: string;
+
+    /** The message to send if the user doesn't provide the correct arguments */
+    prompt?: string;
+
+    /** The minimum time they should provide in milliseconds */
+    min?: number;
+
+    /** The maximum time they can provide in milliseconds */
+    max?: number;
+}
+
+export type Flags =
+    { 
+        [id: string]:
+            (string|number|Discord.GuildChannel|Discord.Role|Discord.GuildMember|Discord.User|Discord.MessageAttachment)
+     | Array<string|number|Discord.GuildChannel|Discord.Role|Discord.GuildMember|Discord.User|Discord.MessageAttachment>
+    }
