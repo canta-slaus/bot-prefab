@@ -1,4 +1,4 @@
-const { PermissionResolvable, Client, Message, Collection, Snowflake, MessageEmbed, TextChannel, Role, User, GuildMember, MessageAttachment } = require('discord.js')
+const { PermissionResolvable, Client, Message, Collection, Snowflake, MessageEmbed, Role, User, GuildMember, MessageAttachment, GuildChannel } = require('discord.js')
 const { Model } = require('mongoose')
 
 /**
@@ -103,10 +103,108 @@ class myClient extends Client {
 }
 
 /**
+ * @typedef Arguments
+ * @type {Array.<SomethingArgument|NumberArgument|ChannelArgument|RoleArgument|AuthorOrMemberArgument|MemberArgument|AttachmentArgument|TimeArgument>}
+ */
+
+ /**
+  * @typedef Flags
+  * @type {Object.<string, (string|number|GuildChannel|Role|GuildMember|User|MessageAttachment)|(string|number|GuildChannel|Role|GuildMember|User|MessageAttachment)[]>}
+  */
+
+/**
+ * @typedef SomethingArgument
+ * @type {object}
+ * @property {'SOMETHING'} type - The user argument can be anything, maybe a word or a URL - anything
+ * @property {string} id - The ID of this argument
+ * @property {number} [amount] - The amount of arguments
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {string[]} [words] - An array of words that the user can send
+ * @property {RegExp} [regexp] - The user argument should match this regular expression
+ */
+
+/**
+ * @typedef NumberArgument
+ * @type {object}
+ * @property {'NUMBER'} type - The user argument has to be a number and will automatically be converted into a number
+ * @property {string} id - The ID of this argument
+ * @property {number} [amount] - The amount of arguments
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {number} [min] - The minimum that the number can be
+ * @property {number} [max] - The maximum that the number can be
+ * @property {boolean} [toInteger] - Whether the number should be converted into an integer
+ */
+
+/**
+ * @typedef ChannelArgument
+ * @type {object}
+ * @property {'CHANNEL'} type - The user argument has to be a channel and will automatically be converted into a channel
+ * @property {string} id - The ID of this argument
+ * @property {number} [amount] - The amount of arguments
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {('text'|'voice'|'category'|'news'|'store')[]} [channelTypes] - The channel types that the provided channel can be
+ */
+
+/**
+ * @typedef RoleArgument
+ * @type {object}
+ * @property {'ROLE'} type - The user argument has to be a role and will automatically be converted into a role
+ * @property {string} id - The ID of this argument
+ * @property {number} [amount] - The amount of arguments
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {boolean} [notBot] - The role shouldn't be the default role of a bot
+ */
+
+/**
+ * @typedef AuthorOrMemberArgument
+ * @type {object}
+ * @property {'AUTHOR_OR_MEMBER'} type - If the user mentions someone, it will get the mentioned member, otherwise it will be the message member
+ * @property {string} id - The ID of this argument
+ * @property {boolean} [toUser] - Whether or not the member should be converted into the User object
+ */
+
+/**
+ * @typedef MemberArgument
+ * @type {object}
+ * @property {'MEMBER'} type - The user argument has to be a member and will automatically be converted into a member
+ * @property {string} id - The ID of this argument
+ * @property {number} [amount] - The amount of arguments
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {boolean} [notBot] - The member shouldn't be a bot
+ * @property {boolean} [notSelf] - The member shouldn't be the command user
+ * @property {boolean} [toUser] - Whether or not the member should be converted into the User object
+ */
+
+/**
+ * @typedef AttachmentArgument
+ * @type {object}
+ * @property {'ATTACHMENT'} type - The message has to have an attachment
+ * @property {string} id - The ID of this argument
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {string[]} attachmentTypes - The accepted attachment types
+ */
+
+/**
+ * @typedef TimeArgument
+ * @type {object}
+ * @property {'TIME'} type - The user argument has to be time and will automatically be converted into milliseconds
+ * @property {string} id - The ID of this argument
+ * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
+ * @property {number} [min] - The minimum time they should provide in milliseconds
+ * @property {number} [max] - The maximum time they can provide in milliseconds
+ */
+
+/**
  * @callback ExecuteFunction
- * @param {myClient} client - The client instance
- * @param {Message} message - The message sent by the user
- * @param {Array.<number|TextChannel|Role|User|GuildMember|string|MessageAttachment>} args - The processed arguments
+ * @param {ExecuteFunctionParameters}
+ */
+
+/**
+ * @typedef ExecuteFunctionParameters
+ * @property {myClient} ExecuteFunctionParameters.client - The client instance
+ * @property {Message} ExecuteFunctionParameters.message - The message sent by the user
+ * @property {string[]} ExecuteFunctionParameters.args - The message arguments
+ * @property {Flags} ExecuteFunctionParameters.flags - The processed arguments mapped by their ID
  */
 
 /**
