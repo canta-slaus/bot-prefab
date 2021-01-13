@@ -11,7 +11,7 @@ const getDefaultChannel = (guild: Discord.Guild) => {
         }
     }
 
-    channel = guild.channels.cache.find((channel) => channel.name === "general" && channel.permissionsFor(guild.client.user!)!.has("SEND_MESSAGES"));
+    channel = guild.channels.cache.find((channel) => channel.name === "general" && channel.permissionsFor(guild.client.user!)!.has("SEND_MESSAGES") && channel.type == "text");
     if (channel) return channel;
 
     return guild.channels.cache
