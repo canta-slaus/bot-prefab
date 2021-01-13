@@ -11,7 +11,7 @@ module.exports = {
     serverOwnerOnly: true,
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     
-    execute: async function(client, message, args) {
+    execute: async function({ client, message, args }) {
         let guildInfo = client.guildInfoCache.get(message.guild.id);
         let disabledCommands = guildInfo.disabledCommands;
 

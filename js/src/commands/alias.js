@@ -10,7 +10,7 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     serverOwnerOnly: true,
 
-    execute: async function(client, message, args) {
+    execute: async function({ client, message, args }) {
         setCooldown(client, this, message)
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let commandAlias = guildInfo.commandAlias ? Object.entries(guildInfo.commandAlias) : [  ]
@@ -22,7 +22,7 @@ module.exports = {
             if (commandAlias.length === 0) {
                 embed.setDescription('There are no custom aliases for this server set yet.')
             } else {
-                for ([alias, command] of commandAlias) {
+                for (let [alias, command] of commandAlias) {
                     let aliases = commands.get(command)
                     if (!aliases || aliases[1].length === 0) aliases = [command, [alias]]
                     else aliases[1].push(alias)

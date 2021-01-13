@@ -11,7 +11,7 @@ module.exports = {
     aliases: ["sc"],
     clientPerms: ['SEND_MESSAGES'],
 
-    execute: async function(client, message, args) {
+    execute: async function({ client, message, args }) {
         setCooldown(client, this, message);
         let userInfo = client.userInfoCache.get(message.author.id)
         if (!userInfo) {

@@ -15,7 +15,7 @@ module.exports = {
     aliases: ["h"],
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 
-    execute: async function(client, message, args) {
+    execute: async function({ client, message, args }) {
         setCooldown(client, this, message)
         let guildInfo = client.guildInfoCache.get(message.guild.id)
         let guildPrefix = guildInfo.prefix
@@ -113,7 +113,7 @@ function getCommandAliases(client, guildId, commandName) {
     let commandAlias = guildInfo.commandAlias ? Object.entries(guildInfo.commandAlias) : [  ]
 
     let commands = new Collection();
-    for ([alias, command] of commandAlias) {
+    for (const [alias, command] of commandAlias) {
         let aliases = commands.get(command)
         if (!aliases || aliases.length === 0) aliases = [alias]
         else aliases.push(alias)

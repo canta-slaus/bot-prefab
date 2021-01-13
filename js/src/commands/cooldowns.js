@@ -9,10 +9,17 @@ module.exports = {
     category: "Utility",
     aliases: ["cd"],
     serverOwnerOnly: true,
+    arguments: [
+        {
+            type: 'SOMETHING',
+            prompt: 'Please specify a command.',
+            id: 'command'
+        }
+    ],
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 
-    execute: async function(client, message, args) {
-        const command = client.commands.get(args[0])
+    execute: async function({ client, message, args, flags }) {
+        const command = client.commands.get(flags.command.toLowerCase())
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`)
         if (command.canNotSetCooldown) return message.channel.send(`${message.author.username}, you can not set a cooldown for this command.`)
 
