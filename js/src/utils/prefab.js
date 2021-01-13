@@ -21,7 +21,7 @@ module.exports = {
     serverOwnerOnly: false,
     arguments: [],
     
-    execute: async function(client, message, args) {
+    execute: async function({ client, message, args, flags }) {
 
     }
 }
