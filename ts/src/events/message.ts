@@ -91,14 +91,16 @@ export default async (client: Client, message: Discord.Message) => {
             }
         }
 
-        if (command.arguments && command.arguments.length !== 0)
-            msgargs = processArguments(message, msgargs,
-                command.arguments
-            ) as any[];
+        let flags;
+        if (command.arguments) flags = processArguments(message, msgargs, command.arguments);
+        if (flags && flags.invalid) {
+            //@ts-ignore
+            if (flags.prompt) return message.channel.send(flags.prompt);
+            return;
+        }
+
         //@ts-ignore
-        if (msgargs.invalid) return message.channel.send(msgargs.prompt);
-        //@ts-ignore
-        command.execute(client, message, msgargs);
+        command.execute({ client: client, message: message, args: msgargs, flags: flags });
     } catch (e) {
         log("ERROR", "src/eventHandlers/message.js", e.message);
     }
