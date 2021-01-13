@@ -71,13 +71,14 @@ module.exports = async (client, message) => {
             }
         }
 
-        if (command.arguments && command.arguments.length !== 0) msgargs = processArguments(message, msgargs, command.arguments)
-        if (msgargs.invalid) {
-            if (msgargs.prompt) return message.channel.send(msgargs.prompt);
+        let flags;
+        if (command.arguments) flags = processArguments(message, msgargs, command.arguments);
+        if (flags && flags.invalid) {
+            if (flags.prompt) return message.channel.send(flags.prompt);
             return;
         }
 
-        command.execute(client, message, msgargs);
+        command.execute({ client: client, message: message, args: msgargs, flags: flags });
     } catch (e) {
         log("ERROR", "src/eventHandlers/message.js", e.message)
     }
