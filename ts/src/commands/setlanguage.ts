@@ -9,7 +9,7 @@ export default {
     aliases: ["sl"],
     clientPerms: ['SEND_MESSAGES'],
     
-    async execute(client, message, args) {
+    async execute({ client, message, args }) {
         setCooldown(client, this, message);
         let userInfo = client.userInfoCache.get(message.author.id)
         if (!userInfo) {

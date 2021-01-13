@@ -13,7 +13,7 @@ export default {
     aliases: ["h"],
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 
-    async execute(client, message, args) {
+    async execute({ client, message, args }) {
         setCooldown(client, this, message);
         let guildInfo = client.guildInfoCache.get(message.guild!.id);
         let guildPrefix = guildInfo!.prefix;

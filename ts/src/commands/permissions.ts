@@ -52,7 +52,7 @@ export default {
     ],
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS', 'ADD_REACTIONS'],
     
-    async execute(client, message, args) {
+    async execute({ client, message, args }) {
         const command = client.commands.get(args[0].toLowerCase())
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`)
 

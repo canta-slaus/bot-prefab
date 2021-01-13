@@ -16,7 +16,7 @@ export default {
     ],
     clientPerms: ['SEND_MESSAGES'],
     
-    async execute(client, message, args) {
+    async execute({ client, message, args }) {
         if (!prefixRegExp.test(args[0])) return message.channel.send(`${message.author.username}, that prefix doesn't follow the rules. Please try again.`)
 
         const guildInfo = client.guildInfoCache.get(message.guild!.id)

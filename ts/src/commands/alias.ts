@@ -8,7 +8,7 @@ export default {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     serverOwnerOnly: true,
 
-    async execute(client, message, args) {
+    async execute({ client, message, args }) {
         setCooldown(client, this, message);
         let guildInfo = client.guildInfoCache.get(message.guild!.id)
         let commandAlias = guildInfo!.commandAlias ? Object.entries(guildInfo!.commandAlias) : [  ]

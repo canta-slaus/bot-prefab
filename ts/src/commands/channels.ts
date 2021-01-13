@@ -10,7 +10,7 @@ export default {
     serverOwnerOnly: true,
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     
-    async execute(client, message, args) {
+    async execute({ client, message, args }) {
         let guildInfo = client.guildInfoCache.get(message.guild!.id);
         let disabledChannels = guildInfo!.disabledChannels;
 
