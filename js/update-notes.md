@@ -1,3 +1,13 @@
+# 13/01/2021
+- All command executes have been changed to `execute: ({ client, message, args })`
+- Updated [`cooldowns.js`](js/src/commands/cooldowns.js) to work with the new arguments system
+- Updated [`guildCreate.js`](js/src/eventHandlers/guildCreate.js) to only look for text channels
+- Updated [`message.js`](js/src/eventHandlers/message.js) to pass in the parameters in the updated variant, as well as the [`prefab.js`](js/src/utils/prefab.js)
+- Updated [`utils.js`](js/src/utils/utils.js):
+    - Updated `processArguments()` for the new argument system and also added all the needed types to [`typings.d.js`](js/src/typings.d.js)
+    - Fixed `paginate()` errors by moving it all into a try-catch statement
+- Updated [`main.js`](js/src/main.js): moved connecting to the database before logging in the client
+- Updated [`languages.json`](js/config/languages.json): added missing `'No category'`
 # 10/01/2021
 - To improve the cooldown mechanics (e.g. it would set a cooldown even if they didn't use the command properly):
     - Added `setCooldown()` and `getCooldown()`
