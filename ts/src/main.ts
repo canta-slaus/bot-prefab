@@ -29,17 +29,6 @@ const client = new Discord.Client({
     await registerCommands(client, "../commands");
 
     try {
-        await client.login(config.TOKEN);
-        log(
-        "SUCCESS",
-        "src/index.ts",
-        `Logged in as ${client.user!.tag}`
-        );
-    } catch (e) {
-        log("ERROR", "src/index.ts", `Error logging in: ${e.message}`);
-    }
-
-    try {
         await mongoose.connect(config.MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -55,6 +44,17 @@ const client = new Discord.Client({
         log("ERROR", "src/index.ts", `Error connecting to the database: ${e.message}`);
         log("ERROR", "src/index.ts", "As of now, the prefab heavily relies on a successful connection.\nThere is a short guide on how to setup a MongoDB cluster (online cluster, not localhost) over at https://github.com/canta-slaus/bot-prefab/wiki/Setting-up-a-cluster");
         process.exit(1);
+    }
+
+    try {
+        await client.login(config.TOKEN);
+        log(
+        "SUCCESS",
+        "src/index.ts",
+        `Logged in as ${client.user!.tag}`
+        );
+    } catch (e) {
+        log("ERROR", "src/index.ts", `Error logging in: ${e.message}`);
     }
 
     log("SUCCESS","src/index.ts","Added all commands, categories, events, schemas and connected to MongoDB.");
