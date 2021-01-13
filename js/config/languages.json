@@ -24,7 +24,8 @@
                 "categoriesName": "Categories",
                 "categories": {
                     "Utility": "Utility",
-                    "Misc": "Misc"
+                    "Misc": "Misc",
+                    "No category": "No category"
                 }
             }
         },
