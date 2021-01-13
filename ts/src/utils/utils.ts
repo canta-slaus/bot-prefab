@@ -1,5 +1,7 @@
 import Discord, { MessageEmbed } from "discord.js";
-import { Client, Argument, Command } from "../types";
+//@ts-ignore
+import ms from "ms";
+import { Client, Arguments, Command, Flags } from "../types";
 import embedColors from "../../config/colors.json"
 const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢'];
 const consoleColors = {
@@ -7,164 +9,166 @@ const consoleColors = {
     "WARNING": "\u001b[33m",
     "ERROR": "\u001b[31m"
 }
+const hasAmount = [ "SOMETHING", "NUMBER", "CHANNEL", "ROLE", "MEMBER" ];
 
 function processArguments(
     message: Discord.Message,
     msgArgs: string[],
-    expectedArgs: Argument[]
+    expectedArgs: Arguments
 ):
-    [
-      | string
-      | Discord.Role
-      | Discord.Channel
-      | Discord.GuildMember
-      | Discord.MessageAttachment
-    ]
-    | { invalid: true; prompt: string | undefined }
+    Flags | { invalid: boolean, prompt: string | undefined }
   {
     let counter = 0;
-    let amount, num, role, member, channel;
-    const processedArgs: any[] = msgArgs;
+    let amount, num, role, member, channel, attach, time;
+    let flags: Flags = {  };
 
     for (const argument of expectedArgs) {
-        amount = argument.amount ? ( argument.amount <= 0 ? 1 : argument.amount ) : 1
+        //@ts-ignore
+        if (hasAmount.includes(argument.type)) amount = (argument.amount && argument.amount > 1) ? argument.amount : 1;
+        else amount = 1;
 
         for (var i = 0; i < amount; i++) {
-        switch (argument.type) {
-            case "NUMBER":
-                num = Number(processedArgs[counter]);
-                if (!processedArgs[counter] || isNaN(num)) {
-                    return { invalid: true, prompt: argument.prompt };
-                } else processedArgs[counter] = num;
-                break;
+            switch (argument.type) {
+                case "SOMETHING":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
 
-            case "INTEGER":
-                if (
-                    isNaN(processedArgs[counter]) ||
-                    isNaN(parseFloat(processedArgs[counter]))
-                ) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                processedArgs[counter] = parseInt(processedArgs[counter]);
-                break;
+                    if (argument.words && !argument.words.includes(msgArgs[counter].toLowerCase())) return { invalid: true, prompt: argument.prompt };
+                    else if (argument.regexp && !argument.regexp.test(msgArgs[counter])) return { invalid: true, prompt: argument.prompt };
 
-            case "CHANNEL":
-                if (!processedArgs[counter]) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                if (
-                    processedArgs[counter].startsWith("<#") &&
-                    processedArgs[counter].endsWith(">")
-                ) processedArgs[counter] = processedArgs[counter].slice(2, -1);
-                channel = message.guild!.channels.cache.get(processedArgs[counter]);
-                if (!channel) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                processedArgs[counter] = channel;
-                break;
+                    if (amount == 1) flags[argument.id] = msgArgs[counter];
+                    //@ts-ignore
+                    else if (flags[argument.id]) flags[argument.id].push(msgArgs[counter]);
+                    else flags[argument.id] = [msgArgs[counter]];
+                    break;
 
-            case "ROLE":
-                if (!processedArgs[counter]) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                if (
-                    processedArgs[counter].startsWith("<@&") &&
-                    processedArgs[counter].endsWith(">")
-                ) processedArgs[counter] = processedArgs[counter].slice(3, -1);
-                role = message.guild!.roles.cache.get(processedArgs[counter]);
-                if (!role) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                processedArgs[counter] = role;
-                break;
+                case "NUMBER":
+                    num = Number(msgArgs[counter]);
+                    if (!msgArgs[counter] || isNaN(num)) return { invalid: true, prompt: argument.prompt };
+                    
+                    if (argument.min && argument.min > num) return { invalid: true, prompt: argument.prompt };
 
-            case "AUTHOR_OR_MEMBER":
-                if (
-                    processedArgs[counter] &&
-                    (processedArgs[counter].startsWith("<@") ||
-                    (processedArgs[counter].startsWith("<@!") &&
-                        processedArgs[counter].endsWith(">")))
-                ) processedArgs[counter] = processedArgs[counter]
-                    .replace("<@", "")
-                    .replace("!", "")
-                    .replace(">", "");
-                member = message.guild!.member(processedArgs[counter]);
-                if (!member) processedArgs[counter] = message.member;
-                else processedArgs[counter] = member;
-                if (argument.returnUsers) processedArgs[counter] = processedArgs[counter].user;
-                break;
+                    if (argument.max && argument.max < num) return { invalid: true, prompt: argument.prompt };
 
-            case "ROLE_OR_MEMBER":
-                if (!processedArgs[counter]) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                if (
-                    processedArgs[counter].startsWith("<@&") &&
-                    processedArgs[counter].endsWith(">")
-                )
-                    processedArgs[counter] = processedArgs[counter].slice(3, -1);
-                role = message.guild!.roles.cache.get(processedArgs[counter]);
-                if (!role) {
-                    if (
-                    processedArgs[counter].startsWith("<@") ||
-                    (processedArgs[counter].startsWith("<@!") &&
-                        processedArgs[counter].endsWith(">"))
-                    )
-                    processedArgs[counter] = processedArgs[counter]
-                        .replace("<@", "")
-                        .replace("!", "")
-                        .replace(">", "");
-                    member = message.guild!.member(processedArgs[counter]);
+                    //@ts-ignore
+                    if (argument.toInteger) num = parseInt(num);
+
+                    if (amount == 1) flags[argument.id] = num;
+                    //@ts-ignore
+                    else if (flags[argument.id]) flags[argument.id].push(num);
+                    else flags[argument.id] = [num];
+                    break;
+
+                case "CHANNEL":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    if (msgArgs[counter].startsWith("<#") && msgArgs[counter].endsWith(">")) channel = message.guild!.channels.cache.get(msgArgs[counter].slice(2, -1));
+                    else channel = message.guild!.channels.cache.get(msgArgs[counter]);
+
+                    if (!channel) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.channelTypes && !argument.channelTypes.includes(channel.type)) return { invalid: true, prompt: argument.prompt };
+
+                    if (amount == 1) flags[argument.id] = channel;
+                    //@ts-ignore
+                    else if (flags[argument.id]) flags[argument.id].push(channel);
+                    else flags[argument.id] = [channel];
+                    break;
+
+                case "ROLE":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+    
+                    if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) role = message.guild!.roles.cache.get(msgArgs[counter].slice(3, -1));
+                    else role = message.guild!.roles.cache.get(msgArgs[counter]);
+
+                    if (!role) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.notBot && role.managed) return { invalid: true, prompt: argument.prompt };
+
+                    if (amount == 1) flags[argument.id] = role;
+                    //@ts-ignore
+                    else if (flags[argument.id]) flags[argument.id].push(role);
+                    else flags[argument.id] = [role];
+                    break;
+
+                case "AUTHOR_OR_MEMBER":
+                    if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) member = message.guild!.member(msgArgs[counter].replace("<@", "").replace("!", "").replace(">", ""));
+                    else member = message.guild!.member(msgArgs[counter]);
+
+                    if (!member) flags[argument.id] = message.member!;
+                    else flags[argument.id] = member;
+    
+                    //@ts-ignore
+                    if (argument.toUser) flags[argument.id] = flags[argument.id].user;
+                    break;
+
+                case "MEMBER":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) member = message.guild!.member(msgArgs[counter].replace("<@", "").replace("!", "").replace(">", ""));
+                    else member = message.guild!.member(msgArgs[counter]);
+
                     if (!member) return { invalid: true, prompt: argument.prompt };
-                    else processedArgs[counter] = member;
-                } else processedArgs[counter] = role;
-                break;
+                    else {
+                        if (argument.notBot && member.user.bot) return { invalid: true, prompt: argument.prompt };
 
-            case "SOMETHING":
-                if (!processedArgs[counter]) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                break;
+                        if (argument.notSelf && member.id === message.author.id) return { invalid: true, prompt: argument.prompt };
+                        
+                        if (argument.toUser) member = member.user;
+                        
+                        if (amount == 1) flags[argument.id] = member;
+                        //@ts-ignore
+                        else if (flags[argument.id]) flags[argument.id].push(member);
+                        else flags[argument.id] = [member];
+                    }
+                    break;
 
-            case "MEMBER":
-                if (!processedArgs[counter]) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                if (
-                    processedArgs[counter].startsWith("<@") ||
-                    (processedArgs[counter].startsWith("<@!") &&
-                    processedArgs[counter].endsWith(">"))
-                )
-                    processedArgs[counter] = processedArgs[counter]
-                    .replace("<@", "")
-                    .replace("!", "")
-                    .replace(">", "");
-                member = message.guild!.member(processedArgs[counter]);
-                if (!member) {
-                    return { invalid: true, prompt: argument.prompt };
-                } else processedArgs[counter] = member;
-                break;
+                case "ATTACHMENT":
+                    if (message.attachments.size === 0) return { invalid: true, prompt: argument.prompt };
 
-            case "IMAGE":
-                if (message.attachments.array().length === 0) {
-                    return { invalid: true, prompt: argument.prompt };
-                }
-                processedArgs[counter] = message.attachments.array()[0];
-                break;
+                    attach = message.attachments.filter(a => {
+                        let accepted = false;
 
-            default:
-                log("WARNING", "src/utils/utils.ts", `processArguments: the argument type '${argument.type}' doesn't exist`);
+                        argument.attachmentTypes.forEach(type => {
+                            if (a.proxyURL.endsWith(type)) accepted = true;
+                        });
+
+                        return accepted;
+                    });
+
+                    if (attach.size === 0) return { invalid: true, prompt: argument.prompt };
+
+                    flags[argument.id] = attach.first()!;
+                    break;
+
+                case "TIME":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    time = msgArgs.slice(counter).join("").match(/(\d*)(\D*)/g);
+                    time!.pop();
+
+                    num = 0;
+                    for (var i = 0; i < time!.length; i++) {
+                        try {
+                            num += ms(time![i]);
+                        } catch (e) {
+                            return { invalid: true, prompt: argument.prompt };
+                        }
+                    }
+
+                    if (argument.min && num < argument.min) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.max && num > argument.max) return { invalid: true, prompt: argument.prompt };
+
+                    flags[argument.id] = num;
+                    break;
+                default:
+                    //@ts-ignore
+                    log("WARNING", "src/utils/utils.js", `processArguments: the argument type '${argument.type}' doesn't exist`);
             }
-            counter++;
+            counter++
         }
     }
-    return processedArgs as [
-        | string
-        | Discord.Role
-        | Discord.Channel
-        | Discord.GuildMember
-        | Discord.MessageAttachment
-    ];
+    return flags;
 }
 
 async function blacklist(client: Client, userID: string) {
