@@ -19,7 +19,7 @@ export default {
     someServersOnly: false,
     serverOwnerOnly: false,
     arguments: [],
-    async execute(client, message, args) {
+    async execute({ client, message, args, flags }) {
 
     },
 } as Command;
