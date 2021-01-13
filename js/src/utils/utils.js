@@ -1,4 +1,5 @@
-const { Message, User, MessageEmbed, GuildMember, PermissionResolvable, Guild } = require("discord.js");
+const { Message, User, MessageEmbed, GuildMember, PermissionResolvable, Guild, Collection, GuildChannel, Role, MessageAttachment } = require("discord.js");
+const ms = require("ms")
 const embedColors = require('../../config/colors.json')
 const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢']
 const consoleColors = {
@@ -6,124 +7,158 @@ const consoleColors = {
     "WARNING": "\u001b[33m",
     "ERROR": "\u001b[31m"
 }
+const hasAmount = [ "SOMETHING", "NUMBER", "CHANNEL", "ROLE", "MEMBER" ];
 
 /**
  * Function to check if the user has passed in the proper arguments when using a command
  * @param {Message} message - The message to check the arguments for
  * @param {string[]} msgArgs - The arguments given by the user
- * @param {import('../typings.d').argument[]} expectedArgs - The expected arguments for the command
- * @returns {ProcessedArguments} Returns the arguments array if all the arguments were as expected, else, returns `undefined/false`
+ * @param {import('../typings.d').Arguments} expectedArgs - The expected arguments for the command
+ * @returns {import('../typings.d').Flags} Returns the arguments mapped by their ID's if all the arguments were as expected, else, returns `undefined/false`
  */
 function processArguments(message, msgArgs, expectedArgs) {
-    if (!Array.isArray(expectedArgs)) return log("WARNING", "src/utils/utils.js", "processArguments: expectedArgs has to be an array");
-
     let counter = 0;
-    let amount, num, role, member, channel;
+    let amount, num, role, member, channel, attach, time;
+    let flags = {  };
 
     for (const argument of expectedArgs) {
-        if (typeof argument !== "object" || argument === null) return log("WARNING", "src/utils/utils.js", "processArguments: argument is not an object");
+        if (hasAmount.includes(argument.type)) amount = (argument.amount && argument.amount > 1) ? argument.amount : 1;
+        else amount = 1;
 
-        if (!argument.type) return log("WARNING", "src/utils/utils.js", "processArguments: no argument type was provided");
-
-        if (typeof argument.type !== "string") return log("WARNING", "src/utils/utils.js", "processArguments: argument type is not a string")
-
-        amount = isNaN(argument.amount) ? 1 : ( parseInt(argument.amount) <= 0 ? 1 : parseInt(argument.amount) )
-        
         for (var i = 0; i < amount; i++) {
             switch (argument.type) {
-                case "NUMBER":
-                    num = Number(msgArgs[counter]);
-                    if (!msgArgs[counter] || isNaN(num)) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    else msgArgs[counter] = num;
+                case "SOMETHING":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.words && !argument.words.includes(msgArgs[counter].toLowerCase())) return { invalid: true, prompt: argument.prompt };
+                    else if (argument.regexp && !argument.regexp.test(msgArgs[counter])) return { invalid: true, prompt: argument.prompt };
+
+                    if (amount == 1) flags[argument.id] = msgArgs[counter];
+                    else if (flags[argument.id]) flags[argument.id].push(msgArgs[counter]);
+                    else flags[argument.id] = [msgArgs[counter]];
                     break;
 
-                case "INTEGER":
-                    if (isNaN(msgArgs[counter]) || isNaN(parseFloat(msgArgs[counter]))) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    msgArgs[counter] = parseInt(msgArgs[counter]);
+                case "NUMBER":
+                    num = Number(msgArgs[counter]);
+                    if (!msgArgs[counter] || isNaN(num)) return { invalid: true, prompt: argument.prompt };
+                    
+                    if (argument.min && argument.min > num) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.max && argument.max < num) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.toInteger) num = parseInt(num);
+
+                    if (amount == 1) flags[argument.id] = num;
+                    else if (flags[argument.id]) flags[argument.id].push(num);
+                    else flags[argument.id] = [num];
                     break;
 
                 case "CHANNEL":
-                    if (!msgArgs[counter]) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    if (msgArgs[counter].startsWith("<#") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(2, -1)
-                    channel = message.guild.channels.cache.get(msgArgs[counter]);
-                    if (!channel) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    };
-                    msgArgs[counter] = channel;
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    if (msgArgs[counter].startsWith("<#") && msgArgs[counter].endsWith(">")) channel = message.guild.channels.cache.get(msgArgs[counter].slice(2, -1));
+                    else channel = message.guild.channels.cache.get(msgArgs[counter]);
+
+                    if (!channel) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.channelTypes && !argument.channelTypes.includes(channel.type)) return { invalid: true, prompt: argument.prompt };
+
+                    if (amount == 1) flags[argument.id] = channel;
+                    else if (flags[argument.id]) flags[argument.id].push(channel);
+                    else flags[argument.id] = [channel];
                     break;
 
                 case "ROLE":
-                    if (!msgArgs[counter]) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
-                    role = message.guild.roles.cache.get(msgArgs[counter])
-                    if (!role) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    msgArgs[counter] = role;
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+    
+                    if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) role = message.guild.roles.cache.get(msgArgs[counter].slice(3, -1));
+                    else role = message.guild.roles.cache.get(msgArgs[counter]);
+
+                    if (!role) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.notBot && role.managed) return { invalid: true, prompt: argument.prompt };
+
+                    if (amount == 1) flags[argument.id] = role;
+                    else if (flags[argument.id]) flags[argument.id].push(role);
+                    else flags[argument.id] = [role];
                     break;
 
                 case "AUTHOR_OR_MEMBER":
-                    if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
-                    member = message.guild.member(msgArgs[counter])
-                    if (!member) msgArgs[counter] = message.member
-                    else msgArgs[counter] = member
-                    if (argument.returnUsers) msgArgs[counter] = msgArgs[counter].user
-                    break;
+                    if (msgArgs[counter] && (msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) member = message.guild.member(msgArgs[counter].replace("<@", "").replace("!", "").replace(">", ""));
+                    else member = message.guild.member(msgArgs[counter]);
 
-                case "ROLE_OR_MEMBER":
-                    if (!msgArgs[counter]) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) msgArgs[counter] = msgArgs[counter].slice(3, -1)
-                    role = message.guild.roles.cache.get(msgArgs[counter])
-                    if (!role) {
-                        if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
-                        member = message.guild.member(msgArgs[counter])
-                        if (!member) return msgArgs = { invalid: true, prompt: argument.prompt }
-                        else msgArgs[counter] = member
-                    } else msgArgs[counter] = role
-                    break;
-
-                case "SOMETHING":
-                    if (!msgArgs[counter]) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
+                    if (!member) flags[argument.id] = message.member;
+                    else flags[argument.id] = member;
+    
+                    if (argument.toUser) flags[argument.id] = flags[argument.id].user;
                     break;
 
                 case "MEMBER":
-                    if (!msgArgs[counter]) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) member = message.guild.member(msgArgs[counter].replace("<@", "").replace("!", "").replace(">", ""));
+                    else member = message.guild.member(msgArgs[counter]);
+
+                    if (!member) return { invalid: true, prompt: argument.prompt };
+                    else {
+                        if (argument.notBot && member.user.bot) return { invalid: true, prompt: argument.prompt };
+
+                        if (argument.notSelf && member.id === message.author.id) return { invalid: true, prompt: argument.prompt };
+                        
+                        if (argument.toUser) member = member.user;
+                        
+                        if (amount == 1) flags[argument.id] = member;
+                        else if (flags[argument.id]) flags[argument.id].push(member);
+                        else flags[argument.id] = [member];
                     }
-                    if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) msgArgs[counter] = msgArgs[counter].replace("<@", "").replace("!", "").replace(">", "")
-                    member = message.guild.member(msgArgs[counter])
-                    if (!member) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    else msgArgs[counter] = member
                     break;
 
-                case "IMAGE":
-                    if (message.attachments.array().length === 0) {
-                        return msgArgs = { invalid: true, prompt: argument.prompt }
-                    }
-                    msgArgs[counter] = message.attachments.array()[0]
+                case "ATTACHMENT":
+                    if (message.attachments.size === 0) return { invalid: true, prompt: argument.prompt };
+
+                    attach = message.attachments.filter(a => {
+                        let accepted = false;
+
+                        argument.attachmentTypes.forEach(type => {
+                            if (a.proxyURL.endsWith(type)) accepted = true;
+                        });
+
+                        return accepted;
+                    });
+
+                    if (attach.size === 0) return { invalid: true, prompt: argument.prompt };
+
+                    flags[argument.id] = attach.first();
                     break;
 
+                case "TIME":
+                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
+
+                    time = msgArgs.slice(counter).join("").match(/(\d*)(\D*)/g);
+                    time.pop();
+
+                    num = 0;
+                    for (var i = 0; i < time.length; i++) {
+                        try {
+                            num += ms(time[i]);
+                        } catch (e) {
+                            return { invalid: true, prompt: argument.prompt };
+                        }
+                    }
+
+                    if (argument.min && num < argument.min) return { invalid: true, prompt: argument.prompt };
+
+                    if (argument.max && num > argument.max) return { invalid: true, prompt: argument.prompt };
+
+                    flags[argument.id] = num;
+                    break;
                 default:
                     log("WARNING", "src/utils/utils.js", `processArguments: the argument type '${argument.type}' doesn't exist`);
             }
             counter++
         }
     }
-    return msgArgs;
+    return flags;
 }
 
 /**
@@ -157,74 +192,71 @@ async function whitelist(client, userID) {
  * @example Examples can be seen in `src/utils/utils.md`
  */
 async function paginate(message, embeds, options) {
-    const pageMsg = await message.channel.send({ embed: embeds[0] });
+    try {
+        const pageMsg = await message.channel.send({ embed: embeds[0] });
 
-    let stop = false;
+        for (const emote of reactions) {
+            await pageMsg.react(emote);
+        }
 
-    for (const emote of reactions) {
-        if (stop) return;
-        await pageMsg.react(emote).catch(e => stop = true);
-    }
+        let pageIndex = 0;
+        let time = 30000;
+        const filter = (reaction, user) => {
+            return reactions.includes(reaction.emoji.name) && user.id === message.author.id;
+        };
 
-    let pageIndex = 0;
-    let time = 30000;
-    const filter = (reaction, user) => {
-        return reactions.includes(reaction.emoji.name) && user.id === message.author.id;
-    };
+        if (options) {
+            if (options.time) time = options.time
+        };
 
-    if (options) {
-        if (options.time) time = options.time
-    };
-
-    if (pageMsg.deleted) return;
-
-    const collector = pageMsg.createReactionCollector(filter, { time: time });
-    collector.on('collect', async (reaction, user) => {
-        reaction.users.remove(user)
-        if (reaction.emoji.name === '⏩') {
-            pageIndex = embeds.length - 1
-            await pageMsg.edit({ embed:embeds[pageIndex] })
-        } else if (reaction.emoji.name === '▶️') {
-            if (pageIndex < embeds.length - 1) {
-                pageIndex++
-                await pageMsg.edit({ embed: embeds[pageIndex] })
-            } else {
+        const collector = pageMsg.createReactionCollector(filter, { time: time });
+        collector.on('collect', async (reaction, user) => {
+            reaction.users.remove(user)
+            if (reaction.emoji.name === '⏩') {
+                pageIndex = embeds.length - 1
+                await pageMsg.edit({ embed:embeds[pageIndex] })
+            } else if (reaction.emoji.name === '▶️') {
+                if (pageIndex < embeds.length - 1) {
+                    pageIndex++
+                    await pageMsg.edit({ embed: embeds[pageIndex] })
+                } else {
+                    pageIndex = 0
+                    await pageMsg.edit({ embed: embeds[pageIndex] })
+                }
+            } else if (reaction.emoji.name === '⏸️') {
+                await pageMsg.delete()
+            } else if (reaction.emoji.name === '⏪') {
                 pageIndex = 0
                 await pageMsg.edit({ embed: embeds[pageIndex] })
-            }
-        } else if (reaction.emoji.name === '⏸️') {
-            await pageMsg.delete()
-        } else if (reaction.emoji.name === '⏪') {
-            pageIndex = 0
-            await pageMsg.edit({ embed: embeds[pageIndex] })
-        } else if (reaction.emoji.name === '◀️') {
-            if (pageIndex > 0) {
-                pageIndex--
+            } else if (reaction.emoji.name === '◀️') {
+                if (pageIndex > 0) {
+                    pageIndex--
+                    await pageMsg.edit({ embed: embeds[pageIndex] })
+                } else {
+                    pageIndex = embeds.length - 1
+                    await pageMsg.edit({ embed: embeds[pageIndex] })
+                }
+            } else if (reaction.emoji.name === '🔢') {
+                let num = await getReply(message, { time: 7500, regexp: /^\d+$/ })
+                if (!num) return;
+
+                num = parseInt(num.content)
+
+                if (num > embeds.length) num = embeds.length - 1
+                else num--
+
+                pageIndex = num
+
                 await pageMsg.edit({ embed: embeds[pageIndex] })
-            } else {
-                pageIndex = embeds.length - 1
-                await pageMsg.edit({ embed: embeds[pageIndex] })
             }
-        } else if (reaction.emoji.name === '🔢') {
-            let num = await getReply(message, { time: 7500, regexp: /^\d+$/ })
-            if (!num) return;
+        });
 
-            num = parseInt(num.content)
-
-            if (num > embeds.length) num = embeds.length - 1
-            else num--
-
-            pageIndex = num
-
-            if (pageMsg.deleted) return;
-            await pageMsg.edit({ embed: embeds[pageIndex] })
-        }
-    });
-
-    collector.on('end', () => {
-        if (pageMsg.deleted) return;
-        pageMsg.reactions.removeAll().catch(err => console.log(err));
-    });
+        collector.on('end', () => {
+            pageMsg.reactions.removeAll()
+        });
+    } catch (e) {
+        return;
+    }
 }
 
 /**
@@ -235,7 +267,7 @@ async function paginate(message, embeds, options) {
  * @param {User} [options.user] - The user to listen to messages to
  * @param {string[]} [options.words] - Optional accepted words, will aceept any word if not provided
  * @param {RegExp} [options.regexp] - Optional RegExp to accept user input that matches the RegExp
- * @return {(Message|Boolean)} Returns the `message` sent by the user if there was one, returns `false` otherwise.
+ * @return {Promise<Message|Boolean>} Returns the `message` sent by the user if there was one, returns `false` otherwise.
  * @example const reply = await getReply(message, { time: 10000, words: ['yes', 'y', 'n', 'no'] })
  */
 async function getReply(message, options) {
