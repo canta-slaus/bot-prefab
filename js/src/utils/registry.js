@@ -1,6 +1,8 @@
+//@ts-check
+
 const fs = require('fs').promises;
 const path = require('path');
-const { log } = require('./utils.js')
+const { log } = require('./utils.js');
 
 /**
  * 
@@ -95,7 +97,7 @@ async function registerEvents(client, ...dirs) {
                         let eventModule = require(path.join(__dirname, dir, file));
                         client.on(eventName, eventModule.bind(null, client));
                     } catch(e) {
-                        log("ERROR", "src/registry.js", `Error loading events: ${e.message}`)
+                        log("ERROR", "src/registry.js", `Error loading events: ${e.message}`);
                     }
                 }
             }
