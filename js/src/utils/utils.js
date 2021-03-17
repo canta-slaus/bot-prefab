@@ -1,17 +1,18 @@
-const { Message, User, MessageEmbed, GuildMember, PermissionResolvable, Guild, Collection, GuildChannel, Role, MessageAttachment } = require("discord.js");
-const ms = require("ms")
-const embedColors = require('../../config/colors.json')
-const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢']
+//@ts-check
+
+const { MessageEmbed, Collection } = require("discord.js");
+const ms = require("ms");
+const embedColors = require('../../config/colors.json');
+const reactions = ['⏪', '◀️', '⏸️', '▶️', '⏩', '🔢'];
 const consoleColors = {
     "SUCCESS": "\u001b[32m",
     "WARNING": "\u001b[33m",
     "ERROR": "\u001b[31m"
-}
-const hasAmount = [ "SOMETHING", "NUMBER", "CHANNEL", "ROLE", "MEMBER" ];
+};
 
 /**
  * Function to check if the user has passed in the proper arguments when using a command
- * @param {Message} message - The message to check the arguments for
+ * @param {import('discord.js').Message} message - The message to check the arguments for
  * @param {string[]} msgArgs - The arguments given by the user
  * @param {import('../typings.d').Arguments} expectedArgs - The expected arguments for the command
  * @returns {import('../typings.d').Flags} Returns the arguments mapped by their ID's if all the arguments were as expected, else, returns `undefined/false`
@@ -22,10 +23,10 @@ function processArguments(message, msgArgs, expectedArgs) {
     let flags = {  };
 
     for (const argument of expectedArgs) {
-        if (hasAmount.includes(argument.type)) amount = (argument.amount && argument.amount > 1) ? argument.amount : 1;
-        else amount = 1;
+        //@ts-ignore
+        amount = (argument.amount && argument.amount > 1) ? argument.amount : 1;
 
-        for (var i = 0; i < amount; i++) {
+        for (let i = 0; i < amount; i++) {
             switch (argument.type) {
                 case "SOMETHING":
                     if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
@@ -46,6 +47,7 @@ function processArguments(message, msgArgs, expectedArgs) {
 
                     if (argument.max && argument.max < num) return { invalid: true, prompt: argument.prompt };
 
+                    //@ts-ignore
                     if (argument.toInteger) num = parseInt(num);
 
                     if (amount == 1) flags[argument.id] = num;
@@ -138,7 +140,7 @@ function processArguments(message, msgArgs, expectedArgs) {
                     time.pop();
 
                     num = 0;
-                    for (var i = 0; i < time.length; i++) {
+                    for (let i = 0; i < time.length; i++) {
                         try {
                             num += ms(time[i]);
                         } catch (e) {
@@ -152,9 +154,12 @@ function processArguments(message, msgArgs, expectedArgs) {
 
                     flags[argument.id] = num;
                     break;
+
                 default:
+                    //@ts-ignore
                     log("WARNING", "src/utils/utils.js", `processArguments: the argument type '${argument.type}' doesn't exist`);
             }
+
             counter++
         }
     }
@@ -167,9 +172,10 @@ function processArguments(message, msgArgs, expectedArgs) {
  * @param {string} userID - The ID of the user to whitelist 
  */
 async function blacklist(client, userID) {
-    if (client.blacklistCache.has(userID)) return
-    await client.DBConfig.findByIdAndUpdate('blacklist', { $push: { 'blacklisted': userID } }, { new: true, upsert: true, setDefaultsOnInsert: true })
-    client.blacklistCache.add(userID)
+    if (client.blacklistCache.has(userID)) return;
+    //@ts-ignore
+    await client.DBConfig.findByIdAndUpdate('blacklist', { $push: { 'blacklisted': userID } }, { new: true, upsert: true, setDefaultsOnInsert: true });
+    client.blacklistCache.add(userID);
 }
 
 /**
@@ -178,14 +184,14 @@ async function blacklist(client, userID) {
  * @param {string} userID - The ID of the user to whitelist 
  */
 async function whitelist(client, userID) {
-    if (!client.blacklistCache.has(userID)) return
-    await client.DBConfig.findByIdAndUpdate('blacklist', { $pull: { 'blacklisted': userID } }, { new: true, upsert: true, setDefaultsOnInsert: true })
-    client.blacklistCache.delete(userID)
+    if (!client.blacklistCache.has(userID)) return;
+    await client.DBConfig.findByIdAndUpdate('blacklist', { $pull: { 'blacklisted': userID } }, { new: true, upsert: true, setDefaultsOnInsert: true });
+    client.blacklistCache.delete(userID);
 }
 
 /**
  * Function to automatically send paginated embeds and switch between the pages by listening to the user reactions
- * @param {Message} message - Used to send the paginated message to the channel, get the user, etc.
+ * @param {import('discord.js').Message} message - Used to send the paginated message to the channel, get the user, etc.
  * @param {MessageEmbed[]} embeds - The array of embeds to switch between
  * @param {object} [options] - Optional parameters
  * @param {number} [options.time] - The max time for createReactionCollector after which all of the reactions disappear
@@ -197,6 +203,7 @@ async function paginate(message, embeds, options) {
 
         for (const emote of reactions) {
             await pageMsg.react(emote);
+            await delay(750);
         }
 
         let pageIndex = 0;
@@ -206,48 +213,52 @@ async function paginate(message, embeds, options) {
         };
 
         if (options) {
-            if (options.time) time = options.time
+            if (options.time) time = options.time;
         };
 
         const collector = pageMsg.createReactionCollector(filter, { time: time });
         collector.on('collect', async (reaction, user) => {
-            reaction.users.remove(user)
-            if (reaction.emoji.name === '⏩') {
-                pageIndex = embeds.length - 1
-                await pageMsg.edit({ embed:embeds[pageIndex] })
-            } else if (reaction.emoji.name === '▶️') {
-                if (pageIndex < embeds.length - 1) {
-                    pageIndex++
-                    await pageMsg.edit({ embed: embeds[pageIndex] })
-                } else {
-                    pageIndex = 0
-                    await pageMsg.edit({ embed: embeds[pageIndex] })
+            try {
+                await reaction.users.remove(user)
+                if (reaction.emoji.name === '⏩') {
+                    pageIndex = embeds.length - 1;
+                    await pageMsg.edit({ embed:embeds[pageIndex] });
+                } else if (reaction.emoji.name === '▶️') {
+                    if (pageIndex < embeds.length - 1) {
+                        pageIndex++;
+                        await pageMsg.edit({ embed: embeds[pageIndex] });
+                    } else {
+                        pageIndex = 0;
+                        await pageMsg.edit({ embed: embeds[pageIndex] });
+                    }
+                } else if (reaction.emoji.name === '⏸️') {
+                    await pageMsg.delete();
+                } else if (reaction.emoji.name === '⏪') {
+                    pageIndex = 0;
+                    await pageMsg.edit({ embed: embeds[pageIndex] });
+                } else if (reaction.emoji.name === '◀️') {
+                    if (pageIndex > 0) {
+                        pageIndex--;
+                        await pageMsg.edit({ embed: embeds[pageIndex] });
+                    } else {
+                        pageIndex = embeds.length - 1;
+                        await pageMsg.edit({ embed: embeds[pageIndex] });
+                    }
+                } else if (reaction.emoji.name === '🔢') {
+                    let msg = await getReply(message, { time: 7500, regexp: /^\d+$/ });
+                    if (!msg) return;
+    
+                    let num = parseInt(msg.content);
+    
+                    if (num > embeds.length) num = embeds.length - 1;
+                    else num--;
+    
+                    pageIndex = num;
+    
+                    await pageMsg.edit({ embed: embeds[pageIndex] });
                 }
-            } else if (reaction.emoji.name === '⏸️') {
-                await pageMsg.delete()
-            } else if (reaction.emoji.name === '⏪') {
-                pageIndex = 0
-                await pageMsg.edit({ embed: embeds[pageIndex] })
-            } else if (reaction.emoji.name === '◀️') {
-                if (pageIndex > 0) {
-                    pageIndex--
-                    await pageMsg.edit({ embed: embeds[pageIndex] })
-                } else {
-                    pageIndex = embeds.length - 1
-                    await pageMsg.edit({ embed: embeds[pageIndex] })
-                }
-            } else if (reaction.emoji.name === '🔢') {
-                let num = await getReply(message, { time: 7500, regexp: /^\d+$/ })
-                if (!num) return;
-
-                num = parseInt(num.content)
-
-                if (num > embeds.length) num = embeds.length - 1
-                else num--
-
-                pageIndex = num
-
-                await pageMsg.edit({ embed: embeds[pageIndex] })
+            } catch (e) {
+                return;
             }
         });
 
@@ -261,32 +272,36 @@ async function paginate(message, embeds, options) {
 
 /**
  * Function to await a reply from a specific user.
- * @param {Message} message - The message to listen to
+ * @param {import('discord.js').Message} message - The message to listen to
  * @param {object} [options] - Optional parameters
  * @param {number} [options.time] - The max time for awaitMessages 
- * @param {User} [options.user] - The user to listen to messages to
+ * @param {import('discord.js').User} [options.user] - The user to listen to messages to
  * @param {string[]} [options.words] - Optional accepted words, will aceept any word if not provided
  * @param {RegExp} [options.regexp] - Optional RegExp to accept user input that matches the RegExp
- * @return {Promise<Message|Boolean>} Returns the `message` sent by the user if there was one, returns `false` otherwise.
+ * @return {Promise<import('discord.js').Message>} Returns the `message` sent by the user if there was one, returns `false` otherwise.
  * @example const reply = await getReply(message, { time: 10000, words: ['yes', 'y', 'n', 'no'] })
  */
 async function getReply(message, options) {
-    let time = 30000
-    let user = message.author
-    let words = []
+    let time = 30000;
+    let user = message.author;
+    let words = [];
+
     if (options) {
-        if (options.time) time = options.time
-        if (options.user) user = options.user
-        if (options.words) words = options.words
+        if (options.time) time = options.time;
+        if (options.user) user = options.user;
+        if (options.words) words = options.words;
     }
+
     const filter = msg => {
         return msg.author.id === user.id
                && (words.length === 0 || words.includes(msg.content.toLowerCase()))
                && (!options || !options.regexp || options.regexp.test(msg.content))
     }
-    const msgs = await message.channel.awaitMessages(filter, { max: 1, time: time })
-    if (msgs.size > 0) return msgs.first()
-    return false
+
+    const msgs = await message.channel.awaitMessages(filter, { max: 1, time: time });
+
+    if (msgs.size > 0) return msgs.first();
+    return;
 }
 
 /**
@@ -307,7 +322,7 @@ function randomRange(min, max) {
  * @example await delay(5000)
  */
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -330,17 +345,17 @@ function msToTime(ms) {
 
 /**
  * Function to get all missing permissions of a GuildMember
- * @param {GuildMember} member - The guild member whose missing permissions you want to get
- * @param {PermissionResolvable} perms - The permissions you want to check for
+ * @param {import('discord.js').GuildMember} member - The guild member whose missing permissions you want to get
+ * @param {import('discord.js').PermissionString[]} perms - The permissions you want to check for
  * @return {string} Readable string containing all missing permissions
  */
 function missingPermissions(member, perms){
     const missingPerms = member.permissions.missing(perms)
-    .map(str=> `\`${str.replace(/_/g, ' ').toLowerCase().replace(/\b(\w)/g, char => char.toUpperCase())}\``)
+        .map(str=> `\`${str.replace(/_/g, ' ').toLowerCase().replace(/\b(\w)/g, char => char.toUpperCase())}\``);
 
     return missingPerms.length > 1 ?
-    `${missingPerms.slice(0, -1).join(", ")} and ${missingPerms.slice(-1)[0]}` :
-    missingPerms[0]
+        `${missingPerms.slice(0, -1).join(", ")} and ${missingPerms.slice(-1)[0]}` :
+        missingPerms[0];
 }
 
 /**
@@ -350,33 +365,28 @@ function missingPermissions(member, perms){
  * @param {string} text - The message to be displayed
  */
 function log(type, path, text) {
-    console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${consoleColors[type]}${text}\u001b[0m`)
+    console.log(`\u001b[36;1m<bot-prefab>\u001b[0m\u001b[34m [${path}]\u001b[0m - ${consoleColors[type]}${text}\u001b[0m`);
 }
 
-class CustomEmbed extends MessageEmbed {
-    /**
-     * Custom embed class
-     * @param {object} data
-     * @param {import('../typings.d').myClient} data.client 
-     * @param {string} data.userID - The ID of the user you're constructing this embed for
-     */
-    constructor(data) {
-        super()
-        let userInfo = data.client.userInfoCache.get(data.userID) 
-        if (!userInfo) {
-            data.client.DBUser.findById(data.userID).then(d => userInfo = d)
-            if (!userInfo) userInfo = { language: 'english', embedColor: 'default' }
-            data.client.userInfoCache.set(data.userID, userInfo)
-        }
+/**
+ * Custom embed class
+ * @param {object} data
+ * @param {import('../typings.d').myClient} data.client 
+ * @param {string} data.userID - The ID of the user you're constructing this embed for
+ */
+async function CustomEmbed(data) {
+    let userInfo = await getUserInfo(data.client, data.userID);
 
-        this.setColor(embedColors[userInfo.embedColor])
-    }
+    const embed = new MessageEmbed()
+        .setColor(embedColors[userInfo.embedColor]);
+
+    return embed;
 }
 
 /**
  * @param {import('../typings.d').myClient} client
  * @param {import('../typings.d').Command} command - The command you want to set a cooldown for
- * @param {Message} message - The guild ID the command is executed in
+ * @param {import('discord.js').Message} message - The guild ID the command is executed in
  * @return {(number|undefined)}
  */
 function getCooldown(client, command, message) {
@@ -395,7 +405,7 @@ function getCooldown(client, command, message) {
  * 
  * @param {import('../typings.d').myClient} client 
  * @param {import('../typings.d').Command} command 
- * @param {Message} message
+ * @param {import('discord.js').Message} message
  */
 function setCooldown(client, command, message) {
     const cd = getCooldown(client, command, message);
@@ -420,8 +430,39 @@ function setCooldown(client, command, message) {
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 }
 
+/**
+ * @param {import('../typings.d').myClient} client 
+ * @param {string} guildID 
+ */
+async function getGuildInfo(client, guildID) {
+    let guildInfo = client.guildInfoCache.get(guildID);
+
+    if (!guildInfo) {
+        guildInfo = await client.DBGuild.findByIdAndUpdate(guildID, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
+        client.guildInfoCache.set(guildID, guildInfo);
+    }
+
+    return guildInfo;
+}
+
+/**
+ * @param {import('../typings.d').myClient} client 
+ * @param {string} userID 
+ */
+async function getUserInfo(client, userID) {
+    let userInfo = client.userInfoCache.get(userID);
+
+    if (!userInfo) {
+        userInfo = await client.DBUser.findByIdAndUpdate(userID, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
+        client.userInfoCache.set(userID, userInfo);
+    }
+
+    return userInfo;
+}
+
 module.exports = {
     processArguments, blacklist, whitelist, paginate, log,
     getReply, randomRange, delay, msToTime, missingPermissions,
-    CustomEmbed, getCooldown, setCooldown
+    CustomEmbed, getCooldown, setCooldown, getGuildInfo,
+    getUserInfo
 }
