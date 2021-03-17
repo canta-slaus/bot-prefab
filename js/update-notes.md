@@ -1,3 +1,16 @@
+# 17/03/2021
+- The TypeScript version will be discontinued for a while (to push out more updates, instead of spending twice the time to do it for both languages)
+- Added a `Command.nsfw` option
+    - Updated the [`message event`](src/eventHandlers/message.js) to check if a command is NSFW and if the current channel is NSFW too
+- Added `checkAdmin`/`checkOwner` checks to the [`message event`](src/eventHandlers.message.js) when checking for permissions
+- Fixed the `CustomEmbed` now working properly:
+    - It's no longer a class but an **async** function that returns a MessageEmbed
+    - Updated the [`utils file`](src/utils/utils.js) and changed the `CustomEmbed` method
+    - In order for it to work properly now, you have to change `new CustomEmbed({ ... })` to `(await CustomEmbed({ ... }))`
+    - Updated all commands making use of `CustomEmbed`
+    - Updated the [`help command`](src/commands/help.js) to ignore NSFW commands in non-NSFW channels
+- Updated all files and included `//@ts-check` at the top to enable TypeScript-like warnings and errors
+- Added two helper methods: `getGuildInfo()` and `getUserInfo()`, check them out in the [`utils.js`](src/utils/utils.js)
 # 13/01/2021
 - All command executes have been changed to `execute: ({ client, message, args })`
 - Updated [`cooldowns.js`](js/src/commands/cooldowns.js) to work with the new arguments system
