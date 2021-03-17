@@ -1,13 +1,14 @@
-const { PermissionResolvable, Client, Message, Collection, Snowflake, MessageEmbed, Role, User, GuildMember, MessageAttachment, GuildChannel } = require('discord.js')
-const { Model } = require('mongoose')
+const { Client } = require('discord.js');
+const { Model } = require('mongoose');
 
 /**
  * @typedef guildInfo
  * @type {object}
+ * @property {string} _id - The guild ID
  * @property {string} prefix - The prefix for the bot
  * @property {string[]} [disabledCommands] - Array with all disabled command names
  * @property {string[]} [disabledChannels] - Array with all channel ID's that are disabled
- * @property {Object.<string, PermissionResolvable>} [commandPerms] - Contains all the custom command permissions for a command
+ * @property {Object.<string, import('discord.js').PermissionString[]>} [commandPerms] - Contains all the custom command permissions for a command
  * @property {Object.<string, Object.<string, number>>} [commandCooldowns] - Contains all custom role cooldowns for a command
  * @property {Object.<string, string>} [commandAlias] - Contains all custom command aliases: { alias: commandName }
  */
@@ -15,6 +16,7 @@ const { Model } = require('mongoose')
 /**
  * @typedef userInfo
  * @type {object}
+ * @property {string} _id - The user ID
  * @property {string} language - The users language for the command helps
  * @property {string} embedColor - The users embed color
  */
@@ -42,25 +44,25 @@ class myClient extends Client {
     constructor() {
         /**
          * A collection containing all commands
-         * @type {Collection<Snowflake, Command>}
+         * @type {import('discord.js').Collection<Snowflake, Command>}
          */
         this.commands;
 
         /**
          * A collection containing all categories and the commands inside that category
-         * @type {Collection<Snowflake, string[]>}
+         * @type {import('discord.js').Collection<Snowflake, string[]>}
          */
         this.categories;
 
         /**
          * A collection containing all cached guildInfo
-         * @type {Collection<Snowflake, guildInfo>}
+         * @type {import('discord.js').Collection<Snowflake, guildInfo>}
          */
         this.guildInfoCache;
 
         /**
          * A collection containing all cached userInfo
-         * @type {Collection<Snowflake, userInfo>}
+         * @type {import('discord.js').Collection<Snowflake, userInfo>}
          */
         this.userInfoCache;
 
@@ -90,13 +92,13 @@ class myClient extends Client {
 
         /**
          * A collection containing all stored server cooldowns
-         * @type {Collection<Snowflake, Collection<string, Collection<Snowflake, number>>>}
+         * @type {import('discord.js').Collection<Snowflake, Collection<string, Collection<Snowflake, number>>>}
          */
         this.serverCooldowns;
 
         /**
          * A collection containing all stored global cooldowns
-         * @type {Collection<string, Collection<Snowflake, number>>}
+         * @type {import('discord.js').Collection<string, Collection<Snowflake, number>>}
          */
         this.globalCooldowns;
     }
@@ -109,7 +111,7 @@ class myClient extends Client {
 
  /**
   * @typedef Flags
-  * @type {Object.<string, (string|number|GuildChannel|Role|GuildMember|User|MessageAttachment)|(string|number|GuildChannel|Role|GuildMember|User|MessageAttachment)[]>}
+  * @type {Object.<string, *>}
   */
 
 /**
@@ -202,7 +204,7 @@ class myClient extends Client {
 /**
  * @typedef ExecuteFunctionParameters
  * @property {myClient} ExecuteFunctionParameters.client - The client instance
- * @property {Message} ExecuteFunctionParameters.message - The message sent by the user
+ * @property {import('discord.js').Message} ExecuteFunctionParameters.message - The message sent by the user
  * @property {string[]} ExecuteFunctionParameters.args - The message arguments
  * @property {Flags} ExecuteFunctionParameters.flags - The processed arguments mapped by their ID
  */
@@ -223,11 +225,12 @@ class myClient extends Client {
  * @property {boolean} [canNotAddAlias=false] - Whether or not users can add custom aliases for this command
  * @property {boolean} [hideCommand=false] - Whether or not this command will be displayed in the help command
  * @property {boolean} [ignoreDisabledChannels=false] - Whether or not this command will still run in ignored channels
- * @property {PermissionResolvable} [perms=[]] - Permissions that the user needs in order to use this command
- * @property {PermissionResolvable} [clientPerms=[]] - Permissions that the client needs to run this command
+ * @property {import('discord.js').PermissionString[]} [perms=[]] - Permissions that the user needs in order to use this command
+ * @property {import('discord.js').PermissionString[]} [clientPerms=[]] - Permissions that the client needs to run this command
  * @property {boolean} [devOnly=false] - Whether or not this command can only be used by a developer
  * @property {boolean} [someServersOnly=false] - Whether or not this command can only be used in specific servers
  * @property {boolean} [serverOwnerOnly=false] - Whether or not this command can only be used by the server owner
+ * @property {boolean} [nsfw=false] - Whether this command can only be used in a NSFW channel
  * @property {Arguments} [arguments=[]] - Arguments that the user should provide
  * @property {ExecuteFunction} execute - The function that will be ran when someone successfully uses a command
  */
