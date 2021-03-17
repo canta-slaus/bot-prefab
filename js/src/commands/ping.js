@@ -1,3 +1,5 @@
+//@ts-check
+
 const { setCooldown } = require('../utils/utils');
 
 /**
