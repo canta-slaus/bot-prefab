@@ -1,3 +1,5 @@
+//@ts-check
+
 /**
  * @type {import('../typings.d').Command} 
  */
@@ -19,8 +21,9 @@ module.exports = {
     devOnly: false,
     someServersOnly: false,
     serverOwnerOnly: false,
+    nsfw: false,
     arguments: [],
-    
+
     execute: async function({ client, message, args, flags }) {
 
     }
@@ -100,6 +103,10 @@ Attributes:
 
     > serverOwnerOnly [Boolean, optional]
         - whether only the guild owner can use this command
+        - default: false
+
+    > nsfw [Boolean, optional]
+        - whether this command is NSFW and may only be used in NSFW channels
         - default: false
 
     > arguments [Array of Objects, optional]
