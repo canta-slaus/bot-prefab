@@ -1,23 +1,20 @@
-const { processArguments, msToTime, missingPermissions, log, getCooldown } = require("../utils/utils")
-const { Collection, Message } = require("discord.js")
+//@ts-check
+
+const { processArguments, msToTime, missingPermissions, log, getCooldown, getGuildInfo } = require("../utils/utils");
+const { Collection } = require("discord.js");
 const { devs, someServers } = require('../../config/config.json');
 const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
  * message event
  * @param {import('../typings.d').myClient} client 
- * @param {Message} message 
+ * @param {import('discord.js').Message} message 
  */
 module.exports = async (client, message) => {
     try {
         if (message.author.bot || message.channel.type !== 'text' || client.blacklistCache.has(message.author.id) || message.webhookID) return;
 
-        let guildInfo = client.guildInfoCache.get(message.guild.id)
-        if (!guildInfo) {
-            guildInfo = await client.DBGuild.findByIdAndUpdate(message.guild.id, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
-            delete guildInfo._id
-            client.guildInfoCache.set(message.guild.id, guildInfo)
-        }
+        let guildInfo = await getGuildInfo(client, message.guild.id);
 
         const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(guildInfo.prefix)})\\s*`);
         if (!prefixRegex.test(message.content)) return;
@@ -26,9 +23,10 @@ module.exports = async (client, message) => {
         let msgargs = message.content.slice(matchedPrefix.length).trim().split(/ +/);
         let cmdName = msgargs.shift().toLowerCase();
         
-        if (message.mentions.has(client.user) && !cmdName) return message.channel.send(`My prefix is \`${guildInfo.prefix}\` or ${client.user}\nTo view a list of my commands, type either \`${guildInfo.prefix}help\` or \`@${client.user.tag} help\``)
+        if (message.mentions.has(client.user) && !cmdName)
+            return message.channel.send(`My prefix is \`${guildInfo.prefix}\` or ${client.user}\nTo view a list of my commands, type either \`${guildInfo.prefix}help\` or \`@${client.user.tag} help\``);
         
-        const command = client.commands.get(cmdName) || (guildInfo.commandAlias ? client.commands.get(guildInfo.commandAlias[cmdName]) : false)
+        const command = client.commands.get(cmdName) || (guildInfo.commandAlias ? client.commands.get(guildInfo.commandAlias[cmdName]) : false);
 
         if (!command) return;
 
@@ -39,14 +37,18 @@ module.exports = async (client, message) => {
         if (guildInfo.disabledCommands.includes(command.name)) return;
         if (guildInfo.disabledChannels.includes(message.channel.id) && !command.ignoreDisabledChannels) return;
 
-        if (command.clientPerms && !message.channel.permissionsFor(message.guild.me).has(command.clientPerms)) {
-            return message.channel.send(`${message.author.username}, I am missing the following permissions: ${missingPermissions(message.guild.me, command.clientPerms)}`).catch()
+        if (command.clientPerms && !message.channel.permissionsFor(message.guild.me).has(command.clientPerms, true)) {
+            return message.channel.send(`${message.author.username}, I am missing the following permissions: ${missingPermissions(message.guild.me, command.clientPerms)}`).catch();
         }
 
-        if (guildInfo.commandPerms && guildInfo.commandPerms[command.name] && !message.member.hasPermission(guildInfo.commandPerms[command.name])) {
-            return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, guildInfo.commandPerms[command.name])}`)
-        } else if (command.perms && !message.member.hasPermission(command.perms)) {
-            return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, command.perms)}`)
+        if (guildInfo.commandPerms && guildInfo.commandPerms[command.name] && !message.member.hasPermission(guildInfo.commandPerms[command.name], { checkAdmin: true, checkOwner: true })) {
+            return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, guildInfo.commandPerms[command.name])}`);
+        } else if (command.perms && !message.member.hasPermission(command.perms, { checkAdmin: true, checkOwner: true })) {
+            return message.channel.send(`${message.author.username}, you are missing the following permissions: ${missingPermissions(message.member, command.perms)}`);
+        }
+
+        if (command.nsfw && !message.channel.nsfw) {
+            return message.channel.send(`${message.author.username}, this command may only be used in a NSFW channel.`)
         }
 
         const cd = getCooldown(client, command, message);
