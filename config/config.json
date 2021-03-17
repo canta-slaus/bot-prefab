@@ -1,7 +1,0 @@
-{
-    "TOKEN": "YOUR_TOKEN_HERE",
-    "PREFIX": "DEFAULT_PREFIX_HERE",
-    "MONGODB_URI": "MONGODB_CLUTTER_URI_HERE",
-    "devs": [],
-    "someServers": []
-}
