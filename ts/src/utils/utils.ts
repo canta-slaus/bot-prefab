@@ -393,6 +393,17 @@ function setCooldown(client: Client, command: Command, message: Discord.Message)
     setTimeout(() => timestamps!.delete(message.author.id), cooldownAmount);
 }
 
+function getGuildInfo(client: Client, guildID: string) {
+    let guildInfo = client.guildInfoCache.get(guildID);
+
+    if (!guildInfo) {
+        guildInfo = await client.DBGuild.findByIdAndUpdate(guildID, {  }, { new: true, upsert: true, setDefaultsOnInsert: true });
+        client.guildInfoCache.set(guildID, guildInfo);
+    }
+
+    return guildInfo;
+}
+
 export {
     processArguments,
     blacklist,
@@ -406,5 +417,6 @@ export {
     missingPermissions,
     CustomEmbed,
     getCooldown,
-    setCooldown
+    setCooldown,
+    getGuildInfo
 };
