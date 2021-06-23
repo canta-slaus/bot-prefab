@@ -1,3 +1,13 @@
+# 23/06/2021
+It's been a _while_ since the last update - I've been getting some questions, suggestions and bug reports and it was time to fix those. _I'm happy to see that some of you still use the prefab, even want to keep using it and suggest features._\
+- Fixed an error from [`paginate()`](src/utils/utils.js) (error: when the embedded message was deleted, the reaction collector end event was triggered and thus trying to remove all reactions from the message, _which already was deleted_)
+- Updated [`msToTime()`](src/utils/utils.js): it now displays Years, Months, Weeks, Days, Hours, Minutes, Seconds
+- Updated [`processArguments()`](src/utils/utils.js) and [`typings.d.js`](src/typings.d.js): added a new argument property `optional`
+    - If an argument is optional (`optional: true`) and the user didn't provide that argument, none of the following arguments will be checked and the currently parsed arguments will be passed on
+    - Default is `false`
+- Fixed an issue with [`userSchema.js`](schemas/userSchema.js): I actually wanted the stored color values for a user to be the **key** of that very color as defined in the [`colors.json`](config/colors.json) but for the default value for`embedColor` I instead used the **value** of the default value, causing CustomEmbeds for users with no specific color to be black (due to it ending up being undefined)
+- Fixed an issue in [`commands.js`](src/commands/commands.js): When updating the database after disabling a command, I forgot to recache the document, so disabled commands would only be disabled after the bot is restarted (enabling was fine, just not disabling)
+- Updated almost all commands to use `getGuildInfo()` rather than grabbing it from cache (`client.guildInfoCache`) directly for better consistency (although it is fairly safe to assume that if a command is ran, the document for the guild is already cached)
 # 17/03/2021
 - The TypeScript version will be discontinued for a while (to push out more updates, instead of spending twice the time to do it for both languages)
 - Added a `Command.nsfw` option
@@ -13,14 +23,14 @@
 - Added two helper methods: `getGuildInfo()` and `getUserInfo()`, check them out in the [`utils.js`](src/utils/utils.js)
 # 13/01/2021
 - All command executes have been changed to `execute: ({ client, message, args })`
-- Updated [`cooldowns.js`](js/src/commands/cooldowns.js) to work with the new arguments system
-- Updated [`guildCreate.js`](js/src/eventHandlers/guildCreate.js) to only look for text channels
-- Updated [`message.js`](js/src/eventHandlers/message.js) to pass in the parameters in the updated variant, as well as the [`prefab.js`](js/src/utils/prefab.js)
-- Updated [`utils.js`](js/src/utils/utils.js):
-    - Updated `processArguments()` for the new argument system and also added all the needed types to [`typings.d.js`](js/src/typings.d.js)
+- Updated [`cooldowns.js`](src/commands/cooldowns.js) to work with the new arguments system
+- Updated [`guildCreate.js`](src/eventHandlers/guildCreate.js) to only look for text channels
+- Updated [`message.js`](src/eventHandlers/message.js) to pass in the parameters in the updated variant, as well as the [`prefab.js`](src/utils/prefab.js)
+- Updated [`utils.js`](src/utils/utils.js):
+    - Updated `processArguments()` for the new argument system and also added all the needed types to [`typings.d.js`](src/typings.d.js)
     - Fixed `paginate()` errors by moving it all into a try-catch statement
-- Updated [`main.js`](js/src/main.js): moved connecting to the database before logging in the client
-- Updated [`languages.json`](js/config/languages.json): added missing `'No category'`
+- Updated [`main.js`](src/main.js): moved connecting to the database before logging in the client
+- Updated [`languages.json`](config/languages.json): added missing `'No category'`
 # 10/01/2021
 - To improve the cooldown mechanics (e.g. it would set a cooldown even if they didn't use the command properly):
     - Added `setCooldown()` and `getCooldown()`
