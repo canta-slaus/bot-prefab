@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-const def = require('../config/colors.json').default;
 
 const userSchema = Schema({
     _id: String,
@@ -8,7 +7,7 @@ const userSchema = Schema({
         type: String
     },
     embedColor: {
-        default: def,
+        default: 'default',
         type: String
     }
 });
