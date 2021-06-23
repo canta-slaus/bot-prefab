@@ -27,10 +27,15 @@ function processArguments(message, msgArgs, expectedArgs) {
         amount = (argument.amount && argument.amount > 1) ? argument.amount : 1;
 
         for (let i = 0; i < amount; i++) {
+            if (!msgArgs[counter] && argument.type !== "ATTACHMENT") {
+                //@ts-ignore
+                if (argument.optional) return flags;
+                //@ts-ignore
+                return { invalid: true, prompt: argument.prompt };
+            }
+
             switch (argument.type) {
                 case "SOMETHING":
-                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
-
                     if (argument.words && !argument.words.includes(msgArgs[counter].toLowerCase())) return { invalid: true, prompt: argument.prompt };
                     else if (argument.regexp && !argument.regexp.test(msgArgs[counter])) return { invalid: true, prompt: argument.prompt };
 
@@ -41,7 +46,7 @@ function processArguments(message, msgArgs, expectedArgs) {
 
                 case "NUMBER":
                     num = Number(msgArgs[counter]);
-                    if (!msgArgs[counter] || isNaN(num)) return { invalid: true, prompt: argument.prompt };
+                    if (isNaN(num)) return { invalid: true, prompt: argument.prompt };
                     
                     if (argument.min && argument.min > num) return { invalid: true, prompt: argument.prompt };
 
@@ -56,8 +61,6 @@ function processArguments(message, msgArgs, expectedArgs) {
                     break;
 
                 case "CHANNEL":
-                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
-
                     if (msgArgs[counter].startsWith("<#") && msgArgs[counter].endsWith(">")) channel = message.guild.channels.cache.get(msgArgs[counter].slice(2, -1));
                     else channel = message.guild.channels.cache.get(msgArgs[counter]);
 
@@ -71,8 +74,6 @@ function processArguments(message, msgArgs, expectedArgs) {
                     break;
 
                 case "ROLE":
-                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
-    
                     if (msgArgs[counter].startsWith("<@&") && msgArgs[counter].endsWith(">")) role = message.guild.roles.cache.get(msgArgs[counter].slice(3, -1));
                     else role = message.guild.roles.cache.get(msgArgs[counter]);
 
@@ -96,8 +97,6 @@ function processArguments(message, msgArgs, expectedArgs) {
                     break;
 
                 case "MEMBER":
-                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
-
                     if ((msgArgs[counter].startsWith("<@") || msgArgs[counter].startsWith("<@!") && msgArgs[counter].endsWith(">"))) member = message.guild.member(msgArgs[counter].replace("<@", "").replace("!", "").replace(">", ""));
                     else member = message.guild.member(msgArgs[counter]);
 
@@ -128,14 +127,13 @@ function processArguments(message, msgArgs, expectedArgs) {
                         return accepted;
                     });
 
-                    if (attach.size === 0) return { invalid: true, prompt: argument.prompt };
+                    if (attach.size === 0 && argument.optional) return flags;
+                    else if (attach.size === 0) return { invalid: true, prompt: argument.prompt };
 
                     flags[argument.id] = attach.first();
                     break;
 
                 case "TIME":
-                    if (!msgArgs[counter]) return { invalid: true, prompt: argument.prompt };
-
                     time = msgArgs.slice(counter).join("").match(/(\d*)(\D*)/g);
                     time.pop();
 
@@ -262,8 +260,12 @@ async function paginate(message, embeds, options) {
             }
         });
 
-        collector.on('end', () => {
-            pageMsg.reactions.removeAll()
+        collector.on('end', async () => {
+            try {
+                await pageMsg.reactions.removeAll()
+            } catch (e) {
+                //
+            }
         });
     } catch (e) {
         return;
@@ -330,17 +332,50 @@ function delay(ms) {
  * @param {number} ms - The time in 
  * @return {string} Readable time as a string
  */
-function msToTime(ms) {
-    let day, hour, minute, seconds;
-    seconds = Math.floor(ms / 1000);
-    minute = Math.floor(seconds / 60);
-    seconds = seconds % 60;
-    hour = Math.floor(minute / 60);
-    minute = minute % 60;
-    day = Math.floor(hour / 24);
-    hour = hour % 24;
-    return day ? (hour ? (`${day}d ${hour}h ${minute}m ${seconds}s`) : (minute ? (`${day}d ${minute}m ${seconds}s`) : (`${day}d ${seconds}s`))) :
-                 (hour ? (`${hour}h ${minute}m ${seconds}s`) : (minute ? (`${minute}m ${seconds}s`) : (`${seconds}s`)))
+ function msToTime(ms) {
+    let time = "";
+
+    let n = 0;
+    if (ms >= 31536000000) {
+        n = Math.floor(ms / 31536000000);
+        time = `${n}y `;
+        ms -= n * 31536000000;
+    }
+
+    if (ms >= 2592000000) {
+        n = Math.floor(ms / 2592000000);
+        time += `${n}mo `;
+        ms -= n * 2592000000;
+    }
+
+    if (ms >= 604800000) {
+        n = Math.floor(ms / 604800000);
+        time += `${n}w `;
+        ms -= n * 604800000;
+    }
+
+    if (ms >= 86400000) {
+        n = Math.floor(ms / 86400000);
+        time += `${n}d `;
+        ms -= n * 86400000;
+    }
+
+    if (ms >= 3600000) {
+        n = Math.floor(ms / 3600000);
+        time += `${n}h `;
+        ms -= n * 3600000;
+    }
+
+    if (ms >= 60000) {
+        n = Math.floor(ms / 60000);
+        time += `${n}m `;
+        ms -= n * 60000;
+    }
+
+    n = Math.ceil(ms / 1000);
+    time += n === 0 ? '' : `${n}s`;
+
+    return time.trimEnd();
 }
 
 /**
