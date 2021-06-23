@@ -1,6 +1,6 @@
 //@ts-check
 
-const { CustomEmbed, setCooldown } = require('../utils/utils');
+const { CustomEmbed, setCooldown, getGuildInfo } = require('../utils/utils');
 
 /**
  * @type {import('../typings.d').Command}
@@ -14,7 +14,7 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
     
     execute: async function({ client, message, args }) {
-        let guildInfo = client.guildInfoCache.get(message.guild.id);
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         let disabledCommands = guildInfo.disabledCommands;
 
         if (!args[0]) {
@@ -38,7 +38,7 @@ module.exports = {
                 case 'disable':
                     if (disabledCommands.includes(command.name)) return message.channel.send(`The command \`${command.name}\` is already disabled.`);
 
-                    await client.DBGuild.findByIdAndUpdate(message.guild.id, {$push: { disabledCommands: command.name }}, { new: true, upsert: true, setDefaultsOnInsert: true });
+                    guildInfo = await client.DBGuild.findByIdAndUpdate(message.guild.id, {$push: { disabledCommands: command.name }}, { new: true, upsert: true, setDefaultsOnInsert: true });
 
                     message.channel.send(`The command \`${command.name}\` has been disabled.`);
                     break;
