@@ -119,6 +119,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'SOMETHING'} type - The user argument can be anything, maybe a word or a URL - anything
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {number} [amount] - The amount of arguments
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {string[]} [words] - An array of words that the user can send
@@ -130,6 +131,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'NUMBER'} type - The user argument has to be a number and will automatically be converted into a number
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {number} [amount] - The amount of arguments
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {number} [min] - The minimum that the number can be
@@ -142,6 +144,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'CHANNEL'} type - The user argument has to be a channel and will automatically be converted into a channel
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {number} [amount] - The amount of arguments
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {('text'|'voice'|'category'|'news'|'store')[]} [channelTypes] - The channel types that the provided channel can be
@@ -152,6 +155,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'ROLE'} type - The user argument has to be a role and will automatically be converted into a role
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {number} [amount] - The amount of arguments
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {boolean} [notBot] - The role shouldn't be the default role of a bot
@@ -170,6 +174,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'MEMBER'} type - The user argument has to be a member and will automatically be converted into a member
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {number} [amount] - The amount of arguments
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {boolean} [notBot] - The member shouldn't be a bot
@@ -182,6 +187,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'ATTACHMENT'} type - The message has to have an attachment
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {string[]} attachmentTypes - The accepted attachment types
  */
@@ -191,6 +197,7 @@ class myClient extends Client {
  * @type {object}
  * @property {'TIME'} type - The user argument has to be time and will automatically be converted into milliseconds
  * @property {string} id - The ID of this argument
+ * @property {boolean} [optional] - Whether this argument is optional
  * @property {string} [prompt] - The message to send if the user doesn't provide the correct arguments
  * @property {number} [min] - The minimum time they should provide in milliseconds
  * @property {number} [max] - The maximum time they can provide in milliseconds
