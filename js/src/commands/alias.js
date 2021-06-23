@@ -1,6 +1,6 @@
 //@ts-check
 
-const { CustomEmbed, setCooldown } = require('../utils/utils');
+const { CustomEmbed, setCooldown, getGuildInfo } = require('../utils/utils');
 const { Collection } = require('discord.js');
 
 /**
@@ -14,7 +14,7 @@ module.exports = {
 
     execute: async function({ client, message, args }) {
         setCooldown(client, this, message);
-        let guildInfo = client.guildInfoCache.get(message.guild.id);
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         let commandAlias = guildInfo.commandAlias ? Object.entries(guildInfo.commandAlias) : [  ];
         let commands = new Collection();
         const embed = (await CustomEmbed({ client: client, userID: message.author.id }))

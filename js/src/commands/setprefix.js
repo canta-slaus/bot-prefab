@@ -1,6 +1,6 @@
 //@ts-check
 
-const { setCooldown } = require('../utils/utils');
+const { setCooldown, getGuildInfo } = require('../utils/utils');
 
 const prefixRegExp = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]{1,15}$/;
 
@@ -23,7 +23,7 @@ module.exports = {
     execute: async function({ client, message, args }) {
         if (!prefixRegExp.test(args[0])) return message.channel.send(`${message.author.username}, that prefix doesn't follow the rules. Please try again.`);
 
-        let guildInfo = client.guildInfoCache.get(message.guild.id)
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         if (guildInfo.prefix === args[0]) return message.channel.send(`${message.author.username}, please make sure to enter a new prefix.`);
 
         setCooldown(client, this, message);

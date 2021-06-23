@@ -1,6 +1,6 @@
 //@ts-check
 
-const { CustomEmbed, setCooldown } = require('../utils/utils');
+const { CustomEmbed, setCooldown, getGuildInfo } = require('../utils/utils');
 
 /**
  * @type {import('../typings.d').Command}
@@ -15,7 +15,7 @@ module.exports = {
     clientPerms: ['SEND_MESSAGES', 'EMBED_LINKS'],
 
     execute: async function({ client, message, args }) {
-        let guildInfo = client.guildInfoCache.get(message.guild.id);
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         let disabledChannels = guildInfo.disabledChannels;
 
         const channelEmbed = (await CustomEmbed({ client: client, userID: message.author.id }))

@@ -1,6 +1,6 @@
 //@ts-check
 
-const { msToTime, CustomEmbed, setCooldown, getUserInfo, getCooldown } = require('../utils/utils.js');
+const { msToTime, CustomEmbed, setCooldown, getUserInfo, getCooldown, getGuildInfo } = require('../utils/utils.js');
 const languages = require('../../config/languages.json');
 const { Message, Collection } = require("discord.js");
 
@@ -23,7 +23,7 @@ module.exports = {
 
     execute: async function({ client, message, args }) {
         setCooldown(client, this, message);
-        let guildInfo = client.guildInfoCache.get(message.guild.id);
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         let guildPrefix = guildInfo.prefix;
 
         let userInfo = await getUserInfo(client, message.author.id);

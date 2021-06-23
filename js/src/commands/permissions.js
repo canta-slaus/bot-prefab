@@ -1,6 +1,6 @@
 //@ts-check
 
-const { getReply, CustomEmbed, setCooldown } = require('../utils/utils');
+const { getReply, CustomEmbed, setCooldown, getGuildInfo } = require('../utils/utils');
 
 const permissions = {
     'a': 'ADMINISTRATOR',
@@ -59,7 +59,7 @@ module.exports = {
         const command = client.commands.get(args[0].toLowerCase());
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`);
 
-        let guildInfo = client.guildInfoCache.get(message.guild.id);
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         let commandPerms = guildInfo.commandPerms;;
 
         const embed = (await CustomEmbed({ client: client, userID: message.author.id }))

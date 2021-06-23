@@ -1,7 +1,7 @@
 //@ts-check
 
 const ms = require('ms');
-const { msToTime, CustomEmbed, setCooldown } = require('../utils/utils');
+const { msToTime, CustomEmbed, setCooldown, getGuildInfo } = require('../utils/utils');
 
 /**
  * @type {import('../typings.d').Command}
@@ -25,7 +25,7 @@ module.exports = {
         if (!command) return message.channel.send(`${message.author.username}, that command doesn't exist.`);
         if (command.canNotSetCooldown) return message.channel.send(`${message.author.username}, you can not set a cooldown for this command.`);
 
-        let guildInfo = client.guildInfoCache.get(message.guild.id);
+        let guildInfo = await getGuildInfo(client, message.guild.id);
         let commandCooldowns = guildInfo.commandCooldowns || {};
 
         const embed = (await CustomEmbed({ client: client, userID: message.author.id }))
